@@ -50,8 +50,8 @@ const Index = () => {
                 <Sparkles className="mr-2 h-5 w-5" />
                 Start Building Free
               </Button>
-              <Button size="lg" variant="outline">
-                View Templates
+              <Button size="lg" variant="outline" onClick={() => navigate("/auth")}>
+                Sign In
               </Button>
             </div>
           </div>

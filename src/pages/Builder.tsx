@@ -58,14 +58,13 @@ const Builder = () => {
     template: "modern",
   });
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
-    // Check authentication
+    // Check authentication but don't redirect if not logged in
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
+      setUser(session?.user || null);
       setLoading(false);
     };
 
@@ -74,13 +73,11 @@ const Builder = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/auth");
-      }
+      setUser(session?.user || null);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -110,17 +107,47 @@ const Builder = () => {
               <span className="text-xl font-bold">CVCraft Builder</span>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={() => navigate("/")}>
-                Home
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+              {user ? (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/")}>
+                    Home
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/")}>
+                    Home
+                  </Button>
+                  <Button size="sm" className="bg-gradient-primary" onClick={() => navigate("/auth")}>
+                    Sign In to Save
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </header>
+
+      {/* Optional Login Banner */}
+      {!user && (
+        <div className="bg-gradient-primary text-white py-3">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-sm">
+              💡 <strong>Sign in</strong> to save your resume and access it anytime.{" "}
+              <button
+                onClick={() => navigate("/auth")}
+                className="underline font-semibold hover:opacity-80"
+              >
+                Create free account
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Content - Split View */}
       <div className="container mx-auto px-4 py-6">

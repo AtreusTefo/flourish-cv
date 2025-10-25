@@ -20,9 +20,12 @@ const Index = () => {
               <a href="#features" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Features
               </a>
-              <a href="#templates" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <button
+                onClick={() => navigate("/templates")}
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              >
                 Templates
-              </a>
+              </button>
               <a href="#how-it-works" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 How It Works
               </a>
@@ -50,8 +53,8 @@ const Index = () => {
                 <Sparkles className="mr-2 h-5 w-5" />
                 Start Building Free
               </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate("/auth")}>
-                Sign In
+              <Button size="lg" variant="outline" onClick={() => navigate("/templates")}>
+                View Templates
               </Button>
             </div>
           </div>

@@ -7,6 +7,9 @@ import { useState } from "react";
 import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
 import MinimalClassicTemplate from "@/components/cv/templates/MinimalClassicTemplate";
 import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate";
+import ExecutiveFormalTemplate from "@/components/cv/templates/ExecutiveFormalTemplate";
+import TechDeveloperTemplate from "@/components/cv/templates/TechDeveloperTemplate";
+import SimpleElegantTemplate from "@/components/cv/templates/SimpleElegantTemplate";
 import { sampleCVData } from "@/data/sampleCV";
 import { exportToPDF } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
@@ -41,6 +44,30 @@ const Templates = () => {
       badge: "Trendy",
       features: ["Colored sidebar", "Modern design", "Unique layout", "Eye-catching"],
       component: CreativeEdgeTemplate,
+    },
+    {
+      id: "executive",
+      name: "Executive Formal",
+      description: "Premium corporate design with dark header. Perfect for senior leadership and executive positions.",
+      badge: "Premium",
+      features: ["Dark header design", "Two-column layout", "Professional styling", "Executive feel"],
+      component: ExecutiveFormalTemplate,
+    },
+    {
+      id: "tech",
+      name: "Tech Developer",
+      description: "Modern tech-focused design with gradient header and card layout. Ideal for developers and IT professionals.",
+      badge: "Developer",
+      features: ["Gradient header", "Card-based layout", "Tech aesthetic", "Project showcase"],
+      component: TechDeveloperTemplate,
+    },
+    {
+      id: "elegant",
+      name: "Simple Elegant",
+      description: "Ultra-clean minimalist design with maximum readability. Perfect for any professional role.",
+      badge: "Minimalist",
+      features: ["Maximum simplicity", "Excellent readability", "Timeless design", "Versatile"],
+      component: SimpleElegantTemplate,
     },
   ];
 

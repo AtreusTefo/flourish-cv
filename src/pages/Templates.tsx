@@ -1,134 +1,64 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Check } from "lucide-react";
+import { FileText, Check, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
+import MinimalClassicTemplate from "@/components/cv/templates/MinimalClassicTemplate";
+import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate";
+import { sampleCVData } from "@/data/sampleCV";
+import { exportToPDF } from "@/utils/pdfExport";
+import { useToast } from "@/hooks/use-toast";
 
 const Templates = () => {
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("modern");
+  const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const templates = [
     {
       id: "modern",
-      name: "Modern Professional",
-      description: "Clean, contemporary design with bold headers and accent colors. Perfect for tech and creative roles.",
+      name: "Modern Blue",
+      description: "Two-column layout with blue accents and clean lines. Perfect for tech and creative roles.",
       badge: "Most Popular",
-      features: ["Two-column layout", "Color accents", "Modern typography", "ATS-friendly"],
-      preview: (
-        <div className="border rounded-lg p-6 bg-white h-full">
-          <div className="border-l-4 border-primary pl-4 mb-4">
-            <h3 className="text-2xl font-bold">John Doe</h3>
-            <p className="text-sm text-muted-foreground">Software Engineer</p>
-            <p className="text-xs text-primary mt-1">john@example.com • +1 234 567 890</p>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <h4 className="font-bold text-primary text-sm mb-1">PROFESSIONAL SUMMARY</h4>
-              <div className="h-2 bg-muted rounded w-full mb-1"></div>
-              <div className="h-2 bg-muted rounded w-3/4"></div>
-            </div>
-            <div>
-              <h4 className="font-bold text-primary text-sm mb-1">EXPERIENCE</h4>
-              <div className="space-y-2">
-                <div>
-                  <div className="flex justify-between text-xs">
-                    <span className="font-semibold">Senior Developer</span>
-                    <span className="text-muted-foreground">2020-Present</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded w-full mt-1"></div>
-                  <div className="h-1.5 bg-muted rounded w-2/3 mt-1"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
+      features: ["Two-column layout", "Blue color accents", "Modern typography", "ATS-friendly"],
+      component: ModernBlueTemplate,
     },
     {
       id: "classic",
-      name: "Classic Professional",
-      description: "Traditional, formal layout ideal for corporate, finance, and legal positions.",
+      name: "Minimal Classic",
+      description: "One-column layout with black and gray theme. Ideal for corporate and professional positions.",
       badge: "Traditional",
       features: ["Single column", "Formal styling", "Clear sections", "Timeless design"],
-      preview: (
-        <div className="border rounded-lg p-6 bg-white h-full">
-          <div className="text-center border-b-2 border-foreground pb-3 mb-4">
-            <h3 className="text-2xl font-bold uppercase tracking-wide">John Doe</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              john@example.com | +1 234 567 890 | New York, NY
-            </p>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wide border-b border-foreground pb-1 mb-2">
-                Summary
-              </h4>
-              <div className="h-2 bg-muted rounded w-full mb-1"></div>
-              <div className="h-2 bg-muted rounded w-4/5"></div>
-            </div>
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wide border-b border-foreground pb-1 mb-2">
-                Experience
-              </h4>
-              <div className="space-y-2">
-                <div>
-                  <p className="font-semibold text-xs">Senior Developer</p>
-                  <p className="text-xs text-muted-foreground italic">Tech Company | 2020-Present</p>
-                  <div className="h-1.5 bg-muted rounded w-full mt-1"></div>
-                  <div className="h-1.5 bg-muted rounded w-3/4 mt-1"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
+      component: MinimalClassicTemplate,
     },
     {
-      id: "minimal",
-      name: "Minimal Clean",
-      description: "Sleek, minimalist design with ample white space. Great for design and modern industries.",
+      id: "creative",
+      name: "Creative Edge",
+      description: "Two-column layout with colored sidebar. Stylish yet professional for creative industries.",
       badge: "Trendy",
-      features: ["Minimalist layout", "Generous spacing", "Subtle design", "Easy to scan"],
-      preview: (
-        <div className="border rounded-lg p-6 bg-white h-full">
-          <div className="mb-6">
-            <h3 className="text-3xl font-light tracking-tight">John Doe</h3>
-            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
-              <span>john@example.com</span>
-              <span>•</span>
-              <span>+1 234 567 890</span>
-            </p>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                About
-              </h4>
-              <div className="h-2 bg-muted rounded w-full mb-1"></div>
-              <div className="h-2 bg-muted rounded w-5/6"></div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                Experience
-              </h4>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between items-baseline mb-1">
-                    <p className="font-medium text-xs">Senior Developer</p>
-                    <span className="text-xs text-muted-foreground">2020-Now</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded w-full"></div>
-                  <div className="h-1.5 bg-muted rounded w-2/3 mt-1"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
+      features: ["Colored sidebar", "Modern design", "Unique layout", "Eye-catching"],
+      component: CreativeEdgeTemplate,
     },
   ];
+
+  const handleExportPDF = async () => {
+    try {
+      await exportToPDF("cv-template", `resume-${selectedTemplate}.pdf`);
+      toast({
+        title: "Success!",
+        description: "Your resume has been downloaded as PDF.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleUseTemplate = () => {
     // In future, this will pass the selected template to the builder
@@ -169,61 +99,101 @@ const Templates = () => {
         </div>
       </section>
 
-      {/* Templates Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {templates.map((template) => (
-              <Card
-                key={template.id}
-                className={`overflow-hidden hover:shadow-xl transition-all cursor-pointer ${
-                  selectedTemplate === template.id ? "ring-2 ring-primary shadow-lg" : ""
-                }`}
-                onClick={() => setSelectedTemplate(template.id)}
-              >
-                <div className="aspect-[8.5/11] bg-cv-bg-gray p-4 relative">
-                  {template.preview}
-                  {selectedTemplate === template.id && (
-                    <div className="absolute top-2 right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                      <Check className="h-5 w-5 text-white" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-bold">{template.name}</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      {template.badge}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
-                  <ul className="space-y-1 mb-4">
-                    {template.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-1 h-1 bg-primary rounded-full"></div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className={`w-full ${
-                      selectedTemplate === template.id ? "bg-gradient-primary" : ""
-                    }`}
-                    variant={selectedTemplate === template.id ? "default" : "outline"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTemplate(template.id);
-                      handleUseTemplate();
-                    }}
-                  >
-                    {selectedTemplate === template.id ? "Use This Template" : "Preview"}
-                  </Button>
-                </div>
-              </Card>
-            ))}
+      {/* Template Preview or Grid */}
+      {previewTemplate ? (
+        <section className="py-16">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <div className="mb-8 flex items-center justify-between">
+              <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
+                ← Back to Templates
+              </Button>
+              <Button onClick={handleExportPDF} className="gap-2">
+                <Download className="w-4 h-4" />
+                Download PDF
+              </Button>
+            </div>
+            <div className="bg-white shadow-2xl">
+              {templates.find((t) => t.id === previewTemplate)?.component &&
+                (() => {
+                  const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
+                  return <TemplateComponent data={sampleCVData} />;
+                })()}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {templates.map((template) => {
+                const TemplateComponent = template.component;
+                return (
+                  <Card
+                    key={template.id}
+                    className={`overflow-hidden hover:shadow-xl transition-all cursor-pointer ${
+                      selectedTemplate === template.id ? "ring-2 ring-primary shadow-lg" : ""
+                    }`}
+                    onClick={() => setSelectedTemplate(template.id)}
+                  >
+                    <div className="aspect-[8.5/11] bg-cv-bg-gray p-2 relative overflow-hidden">
+                      <div className="scale-[0.25] origin-top-left w-[400%] pointer-events-none">
+                        <TemplateComponent data={sampleCVData} />
+                      </div>
+                      {selectedTemplate === template.id && (
+                        <div className="absolute top-2 right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg z-10">
+                          <Check className="h-5 w-5 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-xl font-bold">{template.name}</h3>
+                        <Badge variant="secondary" className="text-xs">
+                          {template.badge}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
+                      <ul className="space-y-1 mb-4">
+                        {template.features.map((feature, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className="w-1 h-1 bg-primary rounded-full"></div>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex gap-2">
+                        <Button
+                          className="flex-1"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewTemplate(template.id);
+                          }}
+                        >
+                          Preview
+                        </Button>
+                        <Button
+                          className={`flex-1 ${
+                            selectedTemplate === template.id ? "bg-gradient-primary" : ""
+                          }`}
+                          variant={selectedTemplate === template.id ? "default" : "outline"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTemplate(template.id);
+                            handleUseTemplate();
+                          }}
+                        >
+                          {selectedTemplate === template.id ? "Use Template" : "Select"}
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 bg-cv-bg-gray">

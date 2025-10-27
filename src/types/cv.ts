@@ -47,4 +47,6 @@ export interface CVData {
 export interface TemplateProps {
   data: CVData;
   className?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }

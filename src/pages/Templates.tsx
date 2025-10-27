@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Check, Download } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { FileText, Check, Download, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
@@ -18,6 +19,8 @@ const Templates = () => {
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("modern");
   const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
+  const [primaryColor, setPrimaryColor] = useState("#3B82F6");
+  const [secondaryColor, setSecondaryColor] = useState("#1E40AF");
   const { toast } = useToast();
 
   const templates = [
@@ -129,7 +132,7 @@ const Templates = () => {
       {/* Template Preview or Grid */}
       {previewTemplate ? (
         <section className="py-16">
-          <div className="container mx-auto px-4 max-w-4xl">
+          <div className="container mx-auto px-4 max-w-6xl">
             <div className="mb-8 flex items-center justify-between">
               <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
                 ← Back to Templates
@@ -139,12 +142,149 @@ const Templates = () => {
                 Download PDF
               </Button>
             </div>
-            <div className="bg-white shadow-2xl">
-              {templates.find((t) => t.id === previewTemplate)?.component &&
-                (() => {
-                  const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
-                  return <TemplateComponent data={sampleCVData} />;
-                })()}
+            
+            <div className="grid lg:grid-cols-[1fr,300px] gap-6">
+              <div className="bg-white shadow-2xl">
+                {templates.find((t) => t.id === previewTemplate)?.component &&
+                  (() => {
+                    const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
+                    return <TemplateComponent data={sampleCVData} primaryColor={primaryColor} secondaryColor={secondaryColor} />;
+                  })()}
+              </div>
+              
+              {/* Color Customization Panel */}
+              <div className="space-y-6">
+                <Card className="p-6 sticky top-24">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Palette className="w-5 h-5 text-primary" />
+                    <h3 className="font-bold text-lg">Customize Colors</h3>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="primary-color">Primary Color</Label>
+                      <div className="flex gap-3 items-center">
+                        <input
+                          id="primary-color"
+                          type="color"
+                          value={primaryColor}
+                          onChange={(e) => setPrimaryColor(e.target.value)}
+                          className="w-16 h-16 rounded-lg cursor-pointer border-2 border-border"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={primaryColor}
+                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                            placeholder="#3B82F6"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="secondary-color">Secondary Color</Label>
+                      <div className="flex gap-3 items-center">
+                        <input
+                          id="secondary-color"
+                          type="color"
+                          value={secondaryColor}
+                          onChange={(e) => setSecondaryColor(e.target.value)}
+                          className="w-16 h-16 rounded-lg cursor-pointer border-2 border-border"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={secondaryColor}
+                            onChange={(e) => setSecondaryColor(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                            placeholder="#1E40AF"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <p className="text-sm text-muted-foreground mb-3">Quick Presets:</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#3B82F6");
+                            setSecondaryColor("#1E40AF");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #3B82F6 50%, #1E40AF 50%)" }}
+                          title="Blue"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#10B981");
+                            setSecondaryColor("#059669");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #10B981 50%, #059669 50%)" }}
+                          title="Green"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#8B5CF6");
+                            setSecondaryColor("#6D28D9");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #8B5CF6 50%, #6D28D9 50%)" }}
+                          title="Purple"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#EF4444");
+                            setSecondaryColor("#DC2626");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #EF4444 50%, #DC2626 50%)" }}
+                          title="Red"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#F59E0B");
+                            setSecondaryColor("#D97706");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #F59E0B 50%, #D97706 50%)" }}
+                          title="Orange"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#06B6D4");
+                            setSecondaryColor("#0891B2");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #06B6D4 50%, #0891B2 50%)" }}
+                          title="Cyan"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#EC4899");
+                            setSecondaryColor("#DB2777");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #EC4899 50%, #DB2777 50%)" }}
+                          title="Pink"
+                        />
+                        <button
+                          onClick={() => {
+                            setPrimaryColor("#1F2937");
+                            setSecondaryColor("#111827");
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
+                          style={{ background: "linear-gradient(135deg, #1F2937 50%, #111827 50%)" }}
+                          title="Dark"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
         </section>

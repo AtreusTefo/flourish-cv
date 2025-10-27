@@ -1,12 +1,12 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
-const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
+const SimpleElegantTemplate = ({ data, className = "", primaryColor = "#111827", secondaryColor = "#374151" }: TemplateProps) => {
   return (
     <div className={`bg-white p-12 shadow-lg font-['Open_Sans'] ${className}`} id="cv-template">
       {/* Minimal Header */}
       <div className="mb-10">
-        <h1 className="text-5xl font-light text-gray-900 mb-3 tracking-tight">
+        <h1 className="text-5xl font-light mb-3 tracking-tight" style={{ color: primaryColor }}>
           {data.personalInfo.name}
         </h1>
         <p className="text-xl text-gray-600 font-light mb-6">{data.personalInfo.jobTitle}</p>
@@ -43,7 +43,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Summary */}
       {data.summary && (
         <section className="mb-10">
-          <div className="w-12 h-0.5 bg-gray-900 mb-4"></div>
+          <div className="w-12 h-0.5 mb-4" style={{ backgroundColor: primaryColor }}></div>
           <p className="text-gray-700 leading-relaxed text-base">{data.summary}</p>
         </section>
       )}
@@ -51,7 +51,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Experience */}
       {data.experience.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-6">
+          <h2 className="text-xs font-semibold uppercase tracking-widest mb-6" style={{ color: primaryColor }}>
             Experience
           </h2>
           <div className="space-y-8">
@@ -78,7 +78,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Education */}
       {data.education.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-6">
+          <h2 className="text-xs font-semibold uppercase tracking-widest mb-6" style={{ color: primaryColor }}>
             Education
           </h2>
           <div className="space-y-5">
@@ -107,7 +107,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
         {/* Skills */}
         {data.skills.length > 0 && (
           <section>
-            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-4">
+            <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: primaryColor }}>
               Skills
             </h2>
             <p className="text-gray-700 leading-relaxed">{data.skills.join(" · ")}</p>
@@ -117,7 +117,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
         {/* Projects */}
         {data.projects && data.projects.length > 0 && (
           <section>
-            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-4">
+            <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: primaryColor }}>
               Projects
             </h2>
             <div className="space-y-4">
@@ -138,7 +138,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
         <div className="grid grid-cols-2 gap-8">
           {data.languages && data.languages.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: primaryColor }}>
                 Languages
               </h2>
               <div className="space-y-2">
@@ -153,7 +153,7 @@ const SimpleElegantTemplate = ({ data, className = "" }: TemplateProps) => {
 
           {data.interests && data.interests.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: primaryColor }}>
                 Interests
               </h2>
               <p className="text-gray-700">{data.interests.join(", ")}</p>

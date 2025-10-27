@@ -1,17 +1,17 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
-const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
+const ExecutiveFormalTemplate = ({ data, className = "", primaryColor = "#1F2937", secondaryColor = "#111827" }: TemplateProps) => {
   return (
     <div className={`bg-white p-12 shadow-lg font-['Roboto'] ${className}`} id="cv-template">
       {/* Header with Gray Background */}
-      <div className="bg-gray-800 -mx-12 -mt-12 px-12 py-8 mb-8 text-white">
+      <div className="-mx-12 -mt-12 px-12 py-8 mb-8 text-white" style={{ backgroundColor: primaryColor }}>
         <h1 className="text-4xl font-bold mb-2">{data.personalInfo.name}</h1>
         <p className="text-xl text-gray-300 font-light tracking-wide">{data.personalInfo.jobTitle}</p>
       </div>
 
       {/* Contact Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-6 mb-8 border-b-2 border-gray-300 text-sm">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-6 mb-8 border-b-2 text-sm" style={{ borderColor: primaryColor + "40" }}>
         <div className="flex items-center gap-2">
           <Mail className="w-4 h-4 text-gray-600" />
           <span className="text-gray-700">{data.personalInfo.email}</span>
@@ -45,7 +45,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Education */}
           {data.education.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Education
               </h2>
               <div className="space-y-4">
@@ -65,13 +65,13 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Skills */}
           {data.skills.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Core Skills
               </h2>
               <ul className="space-y-2">
                 {data.skills.map((skill, idx) => (
                   <li key={idx} className="text-sm text-gray-700 pl-4 relative">
-                    <span className="absolute left-0 top-2 w-2 h-2 bg-gray-800 rounded-full"></span>
+                    <span className="absolute left-0 top-2 w-2 h-2 rounded-full" style={{ backgroundColor: primaryColor }}></span>
                     {skill}
                   </li>
                 ))}
@@ -82,7 +82,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Languages */}
           {data.languages && data.languages.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Languages
               </h2>
               <div className="space-y-2">
@@ -102,7 +102,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Executive Summary */}
           {data.summary && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Executive Summary
               </h2>
               <p className="text-gray-700 leading-relaxed">{data.summary}</p>
@@ -112,7 +112,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Professional Experience */}
           {data.experience.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Professional Experience
               </h2>
               <div className="space-y-5">
@@ -137,7 +137,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Projects */}
           {data.projects && data.projects.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Key Projects
               </h2>
               <div className="space-y-3">
@@ -155,7 +155,7 @@ const ExecutiveFormalTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Interests */}
           {data.interests && data.interests.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-gray-800">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 pb-2 border-b-2" style={{ color: primaryColor, borderColor: primaryColor }}>
                 Professional Interests
               </h2>
               <p className="text-gray-700">{data.interests.join(" • ")}</p>

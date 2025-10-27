@@ -1,12 +1,12 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
-const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
+const MinimalClassicTemplate = ({ data, className = "", primaryColor = "#111827", secondaryColor = "#1F2937" }: TemplateProps) => {
   return (
     <div className={`bg-white p-12 shadow-lg font-['Roboto'] ${className}`} id="cv-template">
       {/* Header */}
-      <div className="text-center border-b-2 border-gray-900 pb-6 mb-6">
-        <h1 className="text-4xl font-bold text-gray-900 uppercase tracking-wider mb-2">
+      <div className="text-center pb-6 mb-6 border-b-2" style={{ borderColor: primaryColor }}>
+        <h1 className="text-4xl font-bold uppercase tracking-wider mb-2" style={{ color: primaryColor }}>
           {data.personalInfo.name}
         </h1>
         <p className="text-lg text-gray-700 font-medium mb-3">{data.personalInfo.jobTitle}</p>
@@ -51,7 +51,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Professional Summary */}
       {data.summary && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
             Summary
           </h2>
           <p className="text-gray-700 leading-relaxed">{data.summary}</p>
@@ -61,7 +61,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Work Experience */}
       {data.experience.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
             Experience
           </h2>
           <div className="space-y-4">
@@ -86,7 +86,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Education */}
       {data.education.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
             Education
           </h2>
           <div className="space-y-3">
@@ -111,7 +111,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Skills */}
       {data.skills.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
             Skills
           </h2>
           <p className="text-gray-700">{data.skills.join(" • ")}</p>
@@ -121,7 +121,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* Projects */}
       {data.projects && data.projects.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
             Projects
           </h2>
           <div className="space-y-3">
@@ -140,7 +140,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
       <div className="grid grid-cols-2 gap-6">
         {data.languages && data.languages.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
               Languages
             </h2>
             <div className="space-y-1">
@@ -155,7 +155,7 @@ const MinimalClassicTemplate = ({ data, className = "" }: TemplateProps) => {
 
         {data.interests && data.interests.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b border-gray-900 pb-2 mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-widest pb-2 mb-3 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>
               Interests
             </h2>
             <p className="text-gray-700">{data.interests.join(", ")}</p>

@@ -1,11 +1,11 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin, Code2 } from "lucide-react";
 
-const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
+const TechDeveloperTemplate = ({ data, className = "", primaryColor = "#10B981", secondaryColor = "#14B8A6" }: TemplateProps) => {
   return (
     <div className={`bg-gray-50 p-12 shadow-lg font-['Poppins'] ${className}`} id="cv-template">
       {/* Header with Gradient */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 -mx-12 -mt-12 px-12 py-8 mb-8">
+      <div className="-mx-12 -mt-12 px-12 py-8 mb-8" style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }}>
         <div className="flex items-center gap-3 mb-3">
           <Code2 className="w-10 h-10 text-white" />
           <div>
@@ -46,8 +46,8 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
       {/* About */}
       {data.summary && (
         <section className="mb-8 bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-bold text-emerald-700 mb-3 flex items-center gap-2">
-            <div className="w-1 h-6 bg-emerald-600 rounded"></div>
+          <h2 className="text-lg font-bold mb-3 flex items-center gap-2" style={{ color: primaryColor }}>
+            <div className="w-1 h-6 rounded" style={{ backgroundColor: primaryColor }}></div>
             About Me
           </h2>
           <p className="text-gray-700 leading-relaxed">{data.summary}</p>
@@ -61,8 +61,8 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Experience */}
           {data.experience.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-emerald-600 rounded"></div>
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-6 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Work Experience
               </h2>
               <div className="space-y-5">
@@ -74,7 +74,7 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
                         {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                       </span>
                     </div>
-                    <p className="text-emerald-700 font-medium mb-2">
+                    <p className="font-medium mb-2" style={{ color: primaryColor }}>
                       {exp.company} • {exp.location}
                     </p>
                     <p className="text-gray-600 text-sm leading-relaxed">{exp.description}</p>
@@ -87,17 +87,17 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Projects */}
           {data.projects && data.projects.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-emerald-600 rounded"></div>
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-6 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Featured Projects
               </h2>
               <div className="space-y-4">
                 {data.projects.map((project) => (
-                  <div key={project.id} className="border-l-2 border-emerald-300 pl-4">
+                  <div key={project.id} className="border-l-2 pl-4" style={{ borderColor: primaryColor + "40" }}>
                     <h3 className="font-bold text-gray-900">{project.name}</h3>
                     <p className="text-gray-600 text-sm mb-1">{project.description}</p>
                     {project.url && (
-                      <p className="text-emerald-600 text-sm font-mono">{project.url}</p>
+                      <p className="text-sm font-mono" style={{ color: primaryColor }}>{project.url}</p>
                     )}
                   </div>
                 ))}
@@ -111,15 +111,19 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Technical Skills */}
           {data.skills.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-base font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-5 bg-emerald-600 rounded"></div>
+              <h2 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-5 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Tech Stack
               </h2>
               <div className="space-y-2">
                 {data.skills.map((skill, idx) => (
                   <div
                     key={idx}
-                    className="bg-emerald-50 px-3 py-2 rounded text-sm text-emerald-800 font-medium"
+                    className="px-3 py-2 rounded text-sm font-medium"
+                    style={{ 
+                      backgroundColor: primaryColor + "15",
+                      color: primaryColor
+                    }}
                   >
                     {skill}
                   </div>
@@ -131,8 +135,8 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Education */}
           {data.education.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-base font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-5 bg-emerald-600 rounded"></div>
+              <h2 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-5 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Education
               </h2>
               <div className="space-y-4">
@@ -152,8 +156,8 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Languages */}
           {data.languages && data.languages.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-base font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-5 bg-emerald-600 rounded"></div>
+              <h2 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-5 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Languages
               </h2>
               <div className="space-y-2">
@@ -170,8 +174,8 @@ const TechDeveloperTemplate = ({ data, className = "" }: TemplateProps) => {
           {/* Interests */}
           {data.interests && data.interests.length > 0 && (
             <section className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-base font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <div className="w-1 h-5 bg-emerald-600 rounded"></div>
+              <h2 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: primaryColor }}>
+                <div className="w-1 h-5 rounded" style={{ backgroundColor: primaryColor }}></div>
                 Interests
               </h2>
               <p className="text-gray-700 text-sm">{data.interests.join(", ")}</p>

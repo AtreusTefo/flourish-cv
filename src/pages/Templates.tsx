@@ -11,6 +11,9 @@ import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate
 import ExecutiveFormalTemplate from "@/components/cv/templates/ExecutiveFormalTemplate";
 import TechDeveloperTemplate from "@/components/cv/templates/TechDeveloperTemplate";
 import SimpleElegantTemplate from "@/components/cv/templates/SimpleElegantTemplate";
+import AcademicTemplate from "@/components/cv/templates/AcademicTemplate";
+import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
+import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
 import { sampleCVData } from "@/data/sampleCV";
 import { exportToPDF } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
@@ -71,6 +74,30 @@ const Templates = () => {
       badge: "Minimalist",
       features: ["Maximum simplicity", "Excellent readability", "Timeless design", "Versatile"],
       component: SimpleElegantTemplate,
+    },
+    {
+      id: "academic",
+      name: "Academic Research",
+      description: "Scholarly design with emphasis on education and publications. Ideal for researchers and academics.",
+      badge: "Academic",
+      features: ["Publication-focused", "Education-first", "Classic typography", "Research-oriented"],
+      component: AcademicTemplate,
+    },
+    {
+      id: "bold",
+      name: "Bold Modern",
+      description: "Eye-catching design with vibrant colors and bold typography. Perfect for creative professionals.",
+      badge: "Bold",
+      features: ["Vibrant gradient", "Bold typography", "Card-based layout", "Stand out"],
+      component: BoldModernTemplate,
+    },
+    {
+      id: "compact",
+      name: "Compact Pro",
+      description: "Space-efficient design with accent bar and compact sections. Maximum info in minimal space.",
+      badge: "Efficient",
+      features: ["Compact layout", "Space-efficient", "Accent sidebar", "Dense information"],
+      component: CompactProTemplate,
     },
   ];
 

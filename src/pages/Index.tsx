@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, Sparkles, Download, Lock } from "lucide-react";
+import { FileText, Sparkles, Download, Lock, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,9 +31,21 @@ const Index = () => {
               <a href="#how-it-works" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 How It Works
               </a>
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-                Login
-              </Button>
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/profile")}>
+                    Profile
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>

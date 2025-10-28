@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, LogOut } from "lucide-react";
+import { FileText, LogOut, Save, FolderOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import CVForm from "@/components/cv/CVForm";
 import CVPreview from "@/components/cv/CVPreview";
+import { useAuth } from "@/hooks/useAuth";
+import { useResumes } from "@/hooks/useResumes";
 
 export interface CVData {
   personalInfo: {
@@ -40,8 +42,10 @@ export interface CVData {
 }
 
 const Builder = () => {
+  const { user, loading: authLoading, logout } = useAuth();
+  const { createResume, updateResume, loading: resumeLoading } = useResumes();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [currentResumeId, setCurrentResumeId] = useState<string | null>(null);
   const [cvData, setCVData] = useState<CVData>({
     personalInfo: {
       fullName: "",
@@ -58,34 +62,48 @@ const Builder = () => {
     template: "modern",
   });
 
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    // Check authentication but don't redirect if not logged in
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-      setLoading(false);
-    };
-
-    checkAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Logged out successfully");
+    await logout();
     navigate("/");
   };
 
-  if (loading) {
+  const handleSaveResume = async () => {
+    if (!user) {
+      toast.error("Please sign in to save your resume");
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      const title = cvData.personalInfo.fullName 
+        ? `${cvData.personalInfo.fullName}'s Resume`
+        : "Untitled Resume";
+
+      if (currentResumeId) {
+        await updateResume(currentResumeId, {
+          title,
+          cv_data: cvData as any,
+          template: cvData.template,
+        });
+        toast.success("Resume updated successfully!");
+      } else {
+        const newResume = await createResume({
+          title,
+          cv_data: cvData,
+          template: cvData.template,
+        });
+        if (newResume) {
+          setCurrentResumeId(newResume.id);
+        }
+        toast.success("Resume saved successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast.error("Failed to save resume");
+    }
+  };
+
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-cv-bg-gray flex items-center justify-center">
         <div className="text-center">
@@ -109,6 +127,19 @@ const Builder = () => {
             <div className="flex items-center gap-3">
               {user ? (
                 <>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleSaveResume}
+                    disabled={resumeLoading}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {resumeLoading ? "Saving..." : currentResumeId ? "Update" : "Save"}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
+                    <FolderOpen className="h-4 w-4 mr-2" />
+                    My Resumes
+                  </Button>
                   <Button variant="outline" size="sm" onClick={() => navigate("/")}>
                     Home
                   </Button>

@@ -88,25 +88,25 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Build Your Resume</h2>
-        <p className="text-muted-foreground text-sm">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">Build Your Resume</h2>
+        <p className="text-muted-foreground text-xs sm:text-sm">
           Fill in your information to create a professional resume
         </p>
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="personal">Personal</TabsTrigger>
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="experience">Experience</TabsTrigger>
-          <TabsTrigger value="education">Education</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Personal</TabsTrigger>
+          <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Summary</TabsTrigger>
+          <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Experience</TabsTrigger>
+          <TabsTrigger value="education" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Education</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="personal" className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name *</Label>
+        <TabsContent value="personal" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="fullName" className="text-sm">Full Name *</Label>
             <Input
               id="fullName"
               value={cvData.personalInfo.fullName}
@@ -114,8 +114,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               placeholder="John Doe"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="email" className="text-sm">Email *</Label>
             <Input
               id="email"
               type="email"
@@ -124,8 +124,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               placeholder="john@example.com"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="phone" className="text-sm">Phone</Label>
             <Input
               id="phone"
               value={cvData.personalInfo.phone}
@@ -133,8 +133,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               placeholder="+1 (555) 123-4567"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="location" className="text-sm">Location</Label>
             <Input
               id="location"
               value={cvData.personalInfo.location}
@@ -142,8 +142,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               placeholder="New York, NY"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="linkedin">LinkedIn</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="linkedin" className="text-sm">LinkedIn</Label>
             <Input
               id="linkedin"
               value={cvData.personalInfo.linkedin}
@@ -151,8 +151,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               placeholder="linkedin.com/in/johndoe"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="website">Website/Portfolio</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="website" className="text-sm">Website/Portfolio</Label>
             <Input
               id="website"
               value={cvData.personalInfo.website}
@@ -162,13 +162,13 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
           </div>
         </TabsContent>
 
-        <TabsContent value="summary" className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="summary">Professional Summary</Label>
-              <Button variant="outline" size="sm">
+        <TabsContent value="summary" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+          <div className="space-y-1.5 sm:space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <Label htmlFor="summary" className="text-sm">Professional Summary</Label>
+              <Button variant="outline" size="sm" className="w-fit">
                 <Sparkles className="h-3 w-3 mr-1" />
-                AI Suggest
+                <span className="text-xs">AI Suggest</span>
               </Button>
             </div>
             <Textarea
@@ -176,7 +176,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.summary}
               onChange={(e) => setCVData({ ...cvData, summary: e.target.value })}
               placeholder="Write a brief summary highlighting your key skills and experience..."
-              rows={6}
+              rows={4}
+              className="text-sm"
             />
             <p className="text-xs text-muted-foreground">
               2-3 sentences about your professional background and goals
@@ -184,51 +185,55 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
           </div>
         </TabsContent>
 
-        <TabsContent value="experience" className="space-y-4 mt-4">
+        <TabsContent value="experience" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
           {cvData.experience.map((exp, index) => (
-            <div key={exp.id} className="p-4 border rounded-lg space-y-3 relative">
+            <div key={exp.id} className="p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-3 relative">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">Experience {index + 1}</h4>
+                <h4 className="font-semibold text-sm sm:text-base">Experience {index + 1}</h4>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => removeExperience(exp.id)}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive" />
                 </Button>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <Input
                   placeholder="Job Title"
                   value={exp.title}
                   onChange={(e) => updateExperience(exp.id, "title", e.target.value)}
+                  className="text-sm"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <Input
                   placeholder="Company"
                   value={exp.company}
                   onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
+                  className="text-sm"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                 <Input
                   placeholder="Start Date"
                   value={exp.startDate}
                   onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
+                  className="text-sm"
                 />
                 <Input
                   placeholder="End Date"
                   value={exp.endDate}
                   onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
                   disabled={exp.current}
+                  className="text-sm"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="summary">Description</Label>
-                <Button variant="outline" size="sm">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+                <Label htmlFor="summary" className="text-xs sm:text-sm">Description</Label>
+                <Button variant="outline" size="sm" className="w-fit">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  Suggest
+                  <span className="text-xs">Suggest</span>
                 </Button>
               </div>
               <Textarea
@@ -236,6 +241,7 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 value={exp.description}
                 onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
                 rows={3}
+                className="text-sm"
               />
             </div>
           ))}
@@ -245,33 +251,36 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
           </Button>
         </TabsContent>
 
-        <TabsContent value="education" className="space-y-4 mt-4">
+        <TabsContent value="education" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
           {cvData.education.map((edu, index) => (
-            <div key={edu.id} className="p-4 border rounded-lg space-y-3 relative">
+            <div key={edu.id} className="p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-3 relative">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">Education {index + 1}</h4>
+                <h4 className="font-semibold text-sm sm:text-base">Education {index + 1}</h4>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => removeEducation(edu.id)}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive" />
                 </Button>
               </div>
               <Input
                 placeholder="Degree (e.g., Bachelor of Science in Computer Science)"
                 value={edu.degree}
                 onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
+                className="text-sm"
               />
               <Input
                 placeholder="Institution"
                 value={edu.institution}
                 onChange={(e) => updateEducation(edu.id, "institution", e.target.value)}
+                className="text-sm"
               />
               <Input
                 placeholder="Graduation Date"
                 value={edu.graduationDate}
                 onChange={(e) => updateEducation(edu.id, "graduationDate", e.target.value)}
+                className="text-sm"
               />
             </div>
           ))}

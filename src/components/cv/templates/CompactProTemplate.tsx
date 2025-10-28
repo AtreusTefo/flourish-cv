@@ -5,23 +5,23 @@ const CompactProTemplate = ({ data, className = "", primaryColor = "#0891B2", se
   return (
     <div className={`bg-white shadow-lg font-['Lato'] flex ${className}`} id="cv-template">
       {/* Left Accent Bar with Icons */}
-      <div className="w-16 flex flex-col items-center py-8 gap-6" style={{ backgroundColor: primaryColor }}>
-        <User className="w-8 h-8 text-white" />
-        <div className="flex-1 w-1 bg-white/30 rounded-full"></div>
+      <div className="w-8 sm:w-12 md:w-16 flex flex-col items-center py-4 sm:py-6 md:py-8 gap-3 sm:gap-4 md:gap-6" style={{ backgroundColor: primaryColor }}>
+        <User className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+        <div className="flex-1 w-0.5 sm:w-1 bg-white/30 rounded-full"></div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1">
         {/* Compact Header */}
-        <div className="bg-gray-50 px-10 py-8 border-b-4" style={{ borderColor: primaryColor }}>
-          <div className="flex justify-between items-start">
+        <div className="bg-gray-50 px-4 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 border-b-2 sm:border-b-4" style={{ borderColor: primaryColor }}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
             <div>
-              <h1 className="text-3xl font-bold mb-1" style={{ color: primaryColor }}>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: primaryColor }}>
                 {data.personalInfo.name}
               </h1>
-              <p className="text-lg text-gray-700 font-medium">{data.personalInfo.jobTitle}</p>
+              <p className="text-base sm:text-lg text-gray-700 font-medium">{data.personalInfo.jobTitle}</p>
             </div>
-            <div className="text-right text-xs text-gray-600 space-y-1">
+            <div className="sm:text-right text-xs text-gray-600 space-y-1">
               <div className="flex items-center justify-end gap-2">
                 <Mail className="w-3 h-3" />
                 {data.personalInfo.email}
@@ -51,9 +51,9 @@ const CompactProTemplate = ({ data, className = "", primaryColor = "#0891B2", se
         </div>
 
         {/* Content in Two Columns */}
-        <div className="grid grid-cols-3 gap-8 p-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-10">
           {/* Left Column - Main Content */}
-          <div className="col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-4 sm:space-y-6">
             {/* Profile */}
             {data.summary && (
               <section>
@@ -111,7 +111,7 @@ const CompactProTemplate = ({ data, className = "", primaryColor = "#0891B2", se
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Education */}
             {data.education.length > 0 && (
               <section>

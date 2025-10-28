@@ -126,14 +126,14 @@ const Templates = () => {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-              <FileText className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-foreground">CVCraft</span>
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <span className="text-lg sm:text-xl font-bold text-foreground">CVCraft</span>
             </div>
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => navigate("/")}>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => navigate("/")}>
                 Home
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
@@ -145,12 +145,12 @@ const Templates = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-hero py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+      <section className="bg-gradient-hero py-8 sm:py-12 md:py-16">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3 sm:mb-4">
             Choose Your Perfect Template
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             All templates are professionally designed, ATS-friendly, and fully customizable.
           </p>
         </div>
@@ -158,20 +158,21 @@ const Templates = () => {
 
       {/* Template Preview or Grid */}
       {previewTemplate ? (
-        <section className="py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="mb-8 flex items-center justify-between">
-              <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
+        <section className="py-6 sm:py-12 md:py-16">
+          <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <Button variant="outline" onClick={() => setPreviewTemplate(null)} size="sm">
                 ← Back to Templates
               </Button>
-              <Button onClick={handleExportPDF} className="gap-2">
+              <Button onClick={handleExportPDF} className="gap-2" size="sm">
                 <Download className="w-4 h-4" />
-                Download PDF
+                <span className="hidden sm:inline">Download PDF</span>
+                <span className="sm:hidden">Download</span>
               </Button>
             </div>
             
-            <div className="grid lg:grid-cols-[1fr,300px] gap-6">
-              <div className="bg-white shadow-2xl">
+            <div className="grid lg:grid-cols-[1fr,300px] gap-4 sm:gap-6">
+              <div className="bg-white shadow-2xl overflow-auto max-h-[70vh] sm:max-h-none">
                 {templates.find((t) => t.id === previewTemplate)?.component &&
                   (() => {
                     const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
@@ -180,30 +181,30 @@ const Templates = () => {
               </div>
               
               {/* Color Customization Panel */}
-              <div className="space-y-6">
-                <Card className="p-6 sticky top-24">
-                  <div className="flex items-center gap-2 mb-6">
-                    <Palette className="w-5 h-5 text-primary" />
-                    <h3 className="font-bold text-lg">Customize Colors</h3>
+              <div className="space-y-4 sm:space-y-6">
+                <Card className="p-4 sm:p-6 lg:sticky lg:top-24">
+                  <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                    <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                    <h3 className="font-bold text-base sm:text-lg">Customize Colors</h3>
                   </div>
                   
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="primary-color">Primary Color</Label>
-                      <div className="flex gap-3 items-center">
+                      <Label htmlFor="primary-color" className="text-sm">Primary Color</Label>
+                      <div className="flex gap-2 sm:gap-3 items-center">
                         <input
                           id="primary-color"
                           type="color"
                           value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="w-16 h-16 rounded-lg cursor-pointer border-2 border-border"
+                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
                         />
                         <div className="flex-1">
                           <input
                             type="text"
                             value={primaryColor}
                             onChange={(e) => setPrimaryColor(e.target.value)}
-                            className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                            className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
                             placeholder="#3B82F6"
                           />
                         </div>
@@ -211,30 +212,30 @@ const Templates = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="secondary-color">Secondary Color</Label>
-                      <div className="flex gap-3 items-center">
+                      <Label htmlFor="secondary-color" className="text-sm">Secondary Color</Label>
+                      <div className="flex gap-2 sm:gap-3 items-center">
                         <input
                           id="secondary-color"
                           type="color"
                           value={secondaryColor}
                           onChange={(e) => setSecondaryColor(e.target.value)}
-                          className="w-16 h-16 rounded-lg cursor-pointer border-2 border-border"
+                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
                         />
                         <div className="flex-1">
                           <input
                             type="text"
                             value={secondaryColor}
                             onChange={(e) => setSecondaryColor(e.target.value)}
-                            className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                            className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
                             placeholder="#1E40AF"
                           />
                         </div>
                       </div>
                     </div>
                     
-                    <div className="pt-4 border-t">
-                      <p className="text-sm text-muted-foreground mb-3">Quick Presets:</p>
-                      <div className="grid grid-cols-4 gap-2">
+                    <div className="pt-3 sm:pt-4 border-t">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">Quick Presets:</p>
+                      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                         <button
                           onClick={() => {
                             setPrimaryColor("#3B82F6");
@@ -316,9 +317,9 @@ const Templates = () => {
           </div>
         </section>
       ) : (
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <section className="py-6 sm:py-12 md:py-16">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
               {templates.map((template) => {
                 const TemplateComponent = template.component;
                 return (
@@ -339,18 +340,18 @@ const Templates = () => {
                         </div>
                       )}
                     </div>
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-xl font-bold">{template.name}</h3>
-                        <Badge variant="secondary" className="text-xs">
+                    <div className="p-4 sm:p-6">
+                      <div className="flex items-start justify-between mb-2 gap-2">
+                        <h3 className="text-lg sm:text-xl font-bold">{template.name}</h3>
+                        <Badge variant="secondary" className="text-xs shrink-0">
                           {template.badge}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
-                      <ul className="space-y-1 mb-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{template.description}</p>
+                      <ul className="space-y-1 mb-3 sm:mb-4">
                         {template.features.map((feature, idx) => (
                           <li key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <div className="w-1 h-1 bg-primary rounded-full"></div>
+                            <div className="w-1 h-1 bg-primary rounded-full shrink-0"></div>
                             {feature}
                           </li>
                         ))}
@@ -359,6 +360,7 @@ const Templates = () => {
                         <Button
                           className="flex-1"
                           variant="outline"
+                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             setPreviewTemplate(template.id);
@@ -371,13 +373,15 @@ const Templates = () => {
                             selectedTemplate === template.id ? "bg-gradient-primary" : ""
                           }`}
                           variant={selectedTemplate === template.id ? "default" : "outline"}
+                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedTemplate(template.id);
                             handleUseTemplate();
                           }}
                         >
-                          {selectedTemplate === template.id ? "Use Template" : "Select"}
+                          <span className="hidden sm:inline">{selectedTemplate === template.id ? "Use Template" : "Select"}</span>
+                          <span className="sm:hidden">Use</span>
                         </Button>
                       </div>
                     </div>

@@ -3,19 +3,19 @@ import { Mail, Phone, MapPin, Globe, Linkedin, GraduationCap } from "lucide-reac
 
 const AcademicTemplate = ({ data, className = "", primaryColor = "#0F172A", secondaryColor = "#1E293B" }: TemplateProps) => {
   return (
-    <div className={`bg-white p-12 shadow-lg font-['Merriweather'] ${className}`} id="cv-template">
+    <div className={`bg-white p-6 sm:p-8 md:p-12 shadow-lg font-['Merriweather'] ${className}`} id="cv-template">
       {/* Header - Academic Style */}
-      <div className="text-center mb-10 pb-8 border-b-4" style={{ borderColor: primaryColor }}>
-        <div className="flex justify-center mb-4">
-          <GraduationCap className="w-12 h-12" style={{ color: primaryColor }} />
+      <div className="text-center mb-6 sm:mb-8 md:mb-10 pb-4 sm:pb-6 md:pb-8 border-b-2 sm:border-b-4" style={{ borderColor: primaryColor }}>
+        <div className="flex justify-center mb-3 sm:mb-4">
+          <GraduationCap className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" style={{ color: primaryColor }} />
         </div>
-        <h1 className="text-4xl font-bold mb-3" style={{ color: primaryColor }}>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3" style={{ color: primaryColor }}>
           {data.personalInfo.name}
         </h1>
-        <p className="text-lg text-gray-700 mb-4 italic">{data.personalInfo.jobTitle}</p>
+        <p className="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4 italic">{data.personalInfo.jobTitle}</p>
         
         {/* Contact Info - Inline */}
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
+        <div className="flex flex-wrap justify-center gap-x-3 sm:gap-x-4 md:gap-x-6 gap-y-2 text-xs sm:text-sm text-gray-600">
           <div className="flex items-center gap-1.5">
             <Mail className="w-3.5 h-3.5" />
             {data.personalInfo.email}
@@ -134,7 +134,7 @@ const AcademicTemplate = ({ data, className = "", primaryColor = "#0F172A", seco
       )}
 
       {/* Bottom Grid - Skills, Languages, Interests */}
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {data.skills.length > 0 && (
           <section>
             <h2 className="text-xs font-bold uppercase tracking-widest mb-3 pb-2 border-b" style={{ color: primaryColor, borderColor: primaryColor }}>

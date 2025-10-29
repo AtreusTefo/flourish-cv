@@ -104,20 +104,15 @@ const Templates = () => {
 
   const handleExportPDF = async () => {
     try {
-      const success = await exportToPDF("cv-template", `resume-${selectedTemplate}.pdf`);
-      
-      if (success) {
-        toast({
-          title: "Export Successful!",
-          description: "Your resume PDF is ready",
-        });
-      } else {
-        throw new Error("PDF export validation failed");
-      }
+      await exportToPDF("cv-template", `resume-${selectedTemplate}.pdf`);
+      toast({
+        title: "Success!",
+        description: "Your resume has been downloaded as PDF.",
+      });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: error instanceof Error ? error.message : "Failed to export PDF. Please try again.",
+        title: "Error",
+        description: "Failed to export PDF. Please try again.",
         variant: "destructive",
       });
     }
@@ -162,13 +157,11 @@ const Templates = () => {
             
             <div className="grid lg:grid-cols-[1fr,300px] gap-4 sm:gap-6">
               <div className="bg-white shadow-2xl overflow-auto max-h-[70vh] sm:max-h-none">
-                <div id="cv-template" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {templates.find((t) => t.id === previewTemplate)?.component &&
-                    (() => {
-                      const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
-                      return <TemplateComponent data={sampleCVData} primaryColor={primaryColor} secondaryColor={secondaryColor} />;
-                    })()}
-                </div>
+                {templates.find((t) => t.id === previewTemplate)?.component &&
+                  (() => {
+                    const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;
+                    return <TemplateComponent data={sampleCVData} primaryColor={primaryColor} secondaryColor={secondaryColor} />;
+                  })()}
               </div>
               
               {/* Color Customization Panel */}

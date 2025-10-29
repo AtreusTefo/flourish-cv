@@ -26,21 +26,16 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
 
     setIsExporting(true);
     try {
-      const success = await exportToPDF("cv-preview-content", `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
-      
-      if (success) {
-        toast({
-          title: "Export Successful!",
-          description: "Your resume PDF is ready",
-        });
-      } else {
-        throw new Error("PDF export validation failed");
-      }
+      await exportToPDF("cv-preview-content", `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
+      toast({
+        title: "Success!",
+        description: "Your resume has been downloaded as PDF.",
+      });
     } catch (error) {
       console.error("PDF export error:", error);
       toast({
-        title: "Export Failed",
-        description: error instanceof Error ? error.message : "Failed to export PDF. Please try again.",
+        title: "Error",
+        description: "Failed to export PDF. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -62,8 +57,8 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
         </Button>
       </div>
 
-      {/* CV Preview Content - optimized for PDF export */}
-      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      {/* CV Preview Content */}
+      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px]">
         {/* Header */}
         <div className="text-center border-b pb-4 mb-4">
           <h1 className="text-3xl font-bold text-foreground">

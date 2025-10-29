@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin, Briefcase } from "lucide-react";
 
 const BoldModernTemplate = ({ data, className = "", primaryColor = "#DC2626", secondaryColor = "#991B1B" }: TemplateProps) => {
   return (
-    <div className={`bg-gray-50 shadow-lg font-['Inter'] ${className}`}>
+    <div className={`bg-gray-50 shadow-lg font-['Inter'] ${className}`} id="cv-template">
       {/* Bold Header Section */}
       <div className="p-6 sm:p-8 md:p-12 text-white" style={{ background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` }}>
         <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">

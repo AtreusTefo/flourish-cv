@@ -156,7 +156,7 @@ const Templates = () => {
             </div>
             
             <div className="grid lg:grid-cols-[1fr,300px] gap-4 sm:gap-6">
-              <div id="cv-template" className="bg-white shadow-2xl overflow-auto max-h-[70vh] sm:max-h-none">
+              <div className="bg-white shadow-2xl overflow-auto max-h-[70vh] sm:max-h-none">
                 {templates.find((t) => t.id === previewTemplate)?.component &&
                   (() => {
                     const TemplateComponent = templates.find((t) => t.id === previewTemplate)!.component;

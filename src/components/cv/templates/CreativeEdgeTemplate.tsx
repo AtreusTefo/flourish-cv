@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
 const CreativeEdgeTemplate = ({ data, className = "", primaryColor = "#9333EA", secondaryColor = "#7E22CE" }: TemplateProps) => {
   return (
-    <div className={`bg-white shadow-lg font-['Poppins'] flex ${className}`}>
+    <div className={`bg-white shadow-lg font-['Poppins'] flex ${className}`} id="cv-template">
       {/* Colored Sidebar */}
       <div className="w-1/3 text-white p-8" style={{ background: `linear-gradient(to bottom, ${primaryColor}, ${secondaryColor})` }}>
         {/* Personal Info */}

@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
 const SimpleElegantTemplate = ({ data, className = "", primaryColor = "#111827", secondaryColor = "#374151" }: TemplateProps) => {
   return (
-    <div className={`bg-white p-12 shadow-lg font-['Open_Sans'] ${className}`}>
+    <div className={`bg-white p-12 shadow-lg font-['Open_Sans'] ${className}`} id="cv-template">
       {/* Minimal Header */}
       <div className="mb-10">
         <h1 className="text-5xl font-light mb-3 tracking-tight" style={{ color: primaryColor }}>

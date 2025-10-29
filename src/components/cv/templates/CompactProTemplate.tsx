@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin, User } from "lucide-react";
 
 const CompactProTemplate = ({ data, className = "", primaryColor = "#0891B2", secondaryColor = "#0E7490" }: TemplateProps) => {
   return (
-    <div className={`bg-white shadow-lg font-['Lato'] flex ${className}`}>
+    <div className={`bg-white shadow-lg font-['Lato'] flex ${className}`} id="cv-template">
       {/* Left Accent Bar with Icons */}
       <div className="w-8 sm:w-12 md:w-16 flex flex-col items-center py-4 sm:py-6 md:py-8 gap-3 sm:gap-4 md:gap-6" style={{ backgroundColor: primaryColor }}>
         <User className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />

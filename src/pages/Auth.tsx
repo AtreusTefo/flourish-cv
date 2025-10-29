@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { FileText, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +15,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -25,9 +26,41 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    // Email validation
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    // Password validation
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+    
+    // Full name validation for signup
+    if (!isLogin && !fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
+    setErrors({});
 
     try {
       if (isLogin) {
@@ -35,7 +68,23 @@ const Auth = () => {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          // Handle specific authentication errors
+          if (error.message.includes("Invalid login credentials")) {
+            setErrors({ 
+              general: "Invalid email or password. Please check your credentials and try again." 
+            });
+          } else if (error.message.includes("Email not confirmed")) {
+            setErrors({ 
+              general: "Please check your email and click the confirmation link before signing in." 
+            });
+          } else {
+            setErrors({ 
+              general: error.message || "An error occurred during sign in" 
+            });
+          }
+          return;
+        }
         toast.success("Welcome back!");
       } else {
         const { error } = await supabase.auth.signUp({
@@ -48,11 +97,24 @@ const Auth = () => {
             emailRedirectTo: `${window.location.origin}/builder`,
           },
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            setErrors({ 
+              general: "An account with this email already exists. Please sign in instead." 
+            });
+          } else {
+            setErrors({ 
+              general: error.message || "An error occurred during sign up" 
+            });
+          }
+          return;
+        }
         toast.success("Account created! Please check your email to verify your account.");
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      setErrors({ 
+        general: "An unexpected error occurred. Please try again." 
+      });
     } finally {
       setLoading(false);
     }
@@ -74,6 +136,13 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {errors.general && (
+              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.general}</span>
+              </div>
+            )}
+            
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
@@ -84,7 +153,11 @@ const Auth = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required={!isLogin}
+                  className={errors.fullName ? "border-red-500" : ""}
                 />
+                {errors.fullName && (
+                  <p className="text-sm text-red-600">{errors.fullName}</p>
+                )}
               </div>
             )}
             <div className="space-y-2">
@@ -96,7 +169,11 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className={errors.email ? "border-red-500" : ""}
               />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -108,7 +185,11 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                className={errors.password ? "border-red-500" : ""}
               />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
             <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
               {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
@@ -117,7 +198,10 @@ const Auth = () => {
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setErrors({});
+              }}
               className="text-primary hover:underline"
             >
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}

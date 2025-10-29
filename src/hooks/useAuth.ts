@@ -29,13 +29,28 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      // Use signOut without scope parameter to avoid API key issues
-      const { error } = await supabase.auth.signOut();
+      // Clear local session first
+      setUser(null);
+      
+      // Attempt Supabase logout with better error handling
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      
       if (error) {
         console.error('Logout error:', error);
+        // Even if logout fails on server, we've cleared local state
+        // This ensures user appears logged out in the UI
       }
+      
+      // Clear any remaining session data
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      
     } catch (error) {
       console.error('Logout failed:', error);
+      // Ensure user is logged out locally even if server request fails
+      setUser(null);
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
     }
   };
 

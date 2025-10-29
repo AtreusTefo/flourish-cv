@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { FileText, Check, Download, Palette } from "lucide-react";
+import { Check, Download, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Navigation from "@/components/Navigation";
 import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
 import MinimalClassicTemplate from "@/components/cv/templates/MinimalClassicTemplate";
 import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate";
@@ -125,24 +126,7 @@ const Templates = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-              <span className="text-lg sm:text-xl font-bold text-foreground">CVCraft</span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => navigate("/")}>
-                Home
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-                Sign In
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation variant="minimal" />
 
       {/* Hero Section */}
       <section className="bg-gradient-hero py-8 sm:py-12 md:py-16">

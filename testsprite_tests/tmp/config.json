@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8081",
+  "loginUser": "rebeldryp@gmail.com",
+  "loginPassword": "password",
+  "executionArgs": {
+    "projectName": "flourish-cv-main",
+    "projectPath": "c:\\Users\\User\\Desktop\\flourish-cv-main\\flourish-cv-main",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-s7oQcGIZiPL-UPIg27Q-evGPKB3fsTz1EnHYCdkHY9rKm_hbiIm-bSt1umMC4GjMgWhOdVa2WdgecxTM_0uupjs76G3HIlBo-5iCycCgZ8e7tz03q46o_4W2VL4xAKkyKGI"
+    }
+  },
+  "proxy": "http://81556d3c-7731-4155-84b3-bd4ae65e7aac:awYPQCtUb18FuwY0PxH67HH6UYDSf12p@tun.testsprite.com:8080"
+}

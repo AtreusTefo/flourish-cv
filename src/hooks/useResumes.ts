@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useAuth } from './useAuth';
@@ -12,19 +12,18 @@ export const useResumes = () => {
   const { user, isAuthenticated } = useAuth();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchResumes();
-    } else {
+  const fetchResumes = useCallback(async () => {
+    if (!user) {
+      console.log('No user authenticated, skipping resume fetch');
       setResumes([]);
+      return;
     }
-  }, [isAuthenticated, user]);
-
-  const fetchResumes = async () => {
-    if (!user) return;
 
     setLoading(true);
+    setError(null);
+    
     try {
       const { data, error } = await supabase
         .from('resumes')
@@ -32,15 +31,43 @@ export const useResumes = () => {
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       setResumes(data || []);
-    } catch (error) {
-      console.error('Error fetching resumes:', error);
+    } catch (error: any) {
+      // Silently handle database connection errors in development
+      if (error.message?.includes('Failed to fetch') || error.code === 'PGRST301') {
+        console.warn('Database not available - using local storage fallback');
+        // Try to load from localStorage as fallback
+        const localResumes = localStorage.getItem('cvcraft_resumes');
+        if (localResumes) {
+          try {
+            setResumes(JSON.parse(localResumes));
+          } catch {
+            setResumes([]);
+          }
+        } else {
+          setResumes([]);
+        }
+      } else {
+        console.error('Error fetching resumes:', error);
+        setError(error);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchResumes();
+    } else {
+      setResumes([]);
+      setError(null);
+    }
+  }, [isAuthenticated, user]); // Removed fetchResumes from dependencies
 
   const createResume = async (resumeData: {
     title: string;
@@ -66,9 +93,33 @@ export const useResumes = () => {
 
       setResumes(prev => [data, ...prev]);
       return data;
-    } catch (error) {
-      console.error('Error creating resume:', error);
-      throw error;
+    } catch (error: any) {
+      // Handle database connection errors gracefully
+      if (error.message?.includes('Failed to fetch') || error.code === 'PGRST301') {
+        console.warn('Database not available - saving to local storage');
+        // Create a mock resume object for local storage
+        const mockResume = {
+          id: `local_${Date.now()}`,
+          user_id: user.id,
+          title: resumeData.title,
+          cv_data: resumeData.cv_data,
+          template: resumeData.template,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        
+        // Save to localStorage
+        const localResumes = localStorage.getItem('cvcraft_resumes');
+        const resumes = localResumes ? JSON.parse(localResumes) : [];
+        resumes.unshift(mockResume);
+        localStorage.setItem('cvcraft_resumes', JSON.stringify(resumes));
+        
+        setResumes(prev => [mockResume as any, ...prev]);
+        return mockResume as any;
+      } else {
+        console.error('Error creating resume:', error);
+        throw error;
+      }
     } finally {
       setLoading(false);
     }
@@ -146,6 +197,7 @@ export const useResumes = () => {
   return {
     resumes,
     loading,
+    error,
     fetchResumes,
     createResume,
     updateResume,

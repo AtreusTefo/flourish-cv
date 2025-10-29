@@ -3,8 +3,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Plus, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Sparkles, Trash2, AlertCircle } from "lucide-react";
 import { CVData } from "@/pages/Builder";
+import { sanitizeText, sanitizeHtml, validateEmail, validatePhone, validateUrl } from "@/utils/sanitize";
+import { useState, useEffect } from "react";
 
 interface CVFormProps {
   cvData: CVData;
@@ -12,10 +14,64 @@ interface CVFormProps {
 }
 
 const CVForm = ({ cvData, setCVData }: CVFormProps) => {
-  const updatePersonalInfo = (field: string, value: string) => {
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  const validateAndUpdatePersonalInfo = (field: string, value: string) => {
+    const sanitizedValue = sanitizeText(value);
+    const newErrors = { ...errors };
+    
+    // Validate specific fields
+    switch (field) {
+      case 'email':
+        if (sanitizedValue && !validateEmail(sanitizedValue)) {
+          newErrors[field] = 'Please enter a valid email address';
+        } else {
+          delete newErrors[field];
+        }
+        break;
+      case 'phone':
+        if (sanitizedValue && !validatePhone(sanitizedValue)) {
+          newErrors[field] = 'Please enter a valid phone number';
+        } else {
+          delete newErrors[field];
+        }
+        break;
+      case 'website':
+      case 'linkedin':
+        if (sanitizedValue && !validateUrl(sanitizedValue)) {
+          newErrors[field] = 'Please enter a valid URL';
+        } else {
+          delete newErrors[field];
+        }
+        break;
+      case 'fullName':
+        if (!sanitizedValue.trim()) {
+          newErrors[field] = 'Full name is required';
+        } else {
+          delete newErrors[field];
+        }
+        break;
+      default:
+        delete newErrors[field];
+    }
+    
+    setErrors(newErrors);
+    
     setCVData({
       ...cvData,
-      personalInfo: { ...cvData.personalInfo, [field]: value },
+      personalInfo: { ...cvData.personalInfo, [field]: sanitizedValue },
+    });
+  };
+
+  const updatePersonalInfo = (field: string, value: string) => {
+    validateAndUpdatePersonalInfo(field, value);
+  };
+
+  const updateSummary = (value: string) => {
+    const sanitizedValue = sanitizeHtml(value);
+    setCVData({
+      ...cvData,
+      summary: sanitizedValue,
     });
   };
 
@@ -39,10 +95,16 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
   };
 
   const updateExperience = (id: string, field: string, value: any) => {
+    let sanitizedValue = value;
+    
+    if (typeof value === 'string') {
+      sanitizedValue = field === 'description' ? sanitizeHtml(value) : sanitizeText(value);
+    }
+    
     setCVData({
       ...cvData,
       experience: cvData.experience.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
+        exp.id === id ? { ...exp, [field]: sanitizedValue } : exp
       ),
     });
   };
@@ -72,10 +134,12 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
   };
 
   const updateEducation = (id: string, field: string, value: string) => {
+    const sanitizedValue = sanitizeText(value);
+    
     setCVData({
       ...cvData,
       education: cvData.education.map((edu) =>
-        edu.id === id ? { ...edu, [field]: value } : edu
+        edu.id === id ? { ...edu, [field]: sanitizedValue } : edu
       ),
     });
   };
@@ -97,14 +161,16 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto">
-          <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Personal</TabsTrigger>
-          <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Summary</TabsTrigger>
-          <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Experience</TabsTrigger>
-          <TabsTrigger value="education" className="text-xs sm:text-sm px-2 sm:px-3 py-2">Education</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 h-auto" role="tablist" aria-label="Resume sections">
+          <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="personal-panel">Personal</TabsTrigger>
+          <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="summary-panel">Summary</TabsTrigger>
+          <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="experience-panel">Experience</TabsTrigger>
+          <TabsTrigger value="education" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="education-panel">Education</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="personal" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+        <TabsContent value="personal" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="personal-panel" aria-labelledby="personal-tab">
+          <fieldset>
+            <legend className="sr-only">Personal Information</legend>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="fullName" className="text-sm">Full Name *</Label>
             <Input
@@ -112,7 +178,17 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.personalInfo.fullName}
               onChange={(e) => updatePersonalInfo("fullName", e.target.value)}
               placeholder="John Doe"
+              className={errors.fullName ? "border-red-500" : ""}
+              required
+              aria-describedby={errors.fullName ? "fullName-error" : undefined}
+              aria-invalid={!!errors.fullName}
             />
+            {errors.fullName && (
+              <div id="fullName-error" className="flex items-center gap-1 text-sm text-red-600" role="alert">
+                <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                <span>{errors.fullName}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="email" className="text-sm">Email *</Label>
@@ -122,7 +198,17 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.personalInfo.email}
               onChange={(e) => updatePersonalInfo("email", e.target.value)}
               placeholder="john@example.com"
+              className={errors.email ? "border-red-500" : ""}
+              required
+              aria-describedby={errors.email ? "email-error" : undefined}
+              aria-invalid={!!errors.email}
             />
+            {errors.email && (
+              <div id="email-error" className="flex items-center gap-1 text-sm text-red-600" role="alert">
+                <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                <span>{errors.email}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="phone" className="text-sm">Phone</Label>
@@ -131,7 +217,14 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.personalInfo.phone}
               onChange={(e) => updatePersonalInfo("phone", e.target.value)}
               placeholder="+1 (555) 123-4567"
+              className={errors.phone ? "border-red-500" : ""}
             />
+            {errors.phone && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle className="h-3 w-3" />
+                <span>{errors.phone}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="location" className="text-sm">Location</Label>
@@ -149,7 +242,14 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.personalInfo.linkedin}
               onChange={(e) => updatePersonalInfo("linkedin", e.target.value)}
               placeholder="linkedin.com/in/johndoe"
+              className={errors.linkedin ? "border-red-500" : ""}
             />
+            {errors.linkedin && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle className="h-3 w-3" />
+                <span>{errors.linkedin}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="website" className="text-sm">Website/Portfolio</Label>
@@ -158,11 +258,19 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               value={cvData.personalInfo.website}
               onChange={(e) => updatePersonalInfo("website", e.target.value)}
               placeholder="johndoe.com"
+              className={errors.website ? "border-red-500" : ""}
             />
+            {errors.website && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle className="h-3 w-3" />
+                <span>{errors.website}</span>
+              </div>
+            )}
           </div>
+          </fieldset>
         </TabsContent>
 
-        <TabsContent value="summary" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+        <TabsContent value="summary" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="summary-panel" aria-labelledby="summary-tab">
           <div className="space-y-1.5 sm:space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <Label htmlFor="summary" className="text-sm">Professional Summary</Label>
@@ -174,7 +282,7 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
             <Textarea
               id="summary"
               value={cvData.summary}
-              onChange={(e) => setCVData({ ...cvData, summary: e.target.value })}
+              onChange={(e) => updateSummary(e.target.value)}
               placeholder="Write a brief summary highlighting your key skills and experience..."
               rows={4}
               className="text-sm"
@@ -194,34 +302,53 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={() => removeExperience(exp.id)}
+                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
                 >
-                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive" />
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 <Input
                   placeholder="Job Title"
                   value={exp.title}
                   onChange={(e) => updateExperience(exp.id, "title", e.target.value)}
                   className="text-sm"
                 />
-              </div>
-              <div className="space-y-1.5 sm:space-y-2">
                 <Input
                   placeholder="Company"
                   value={exp.company}
                   onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
                   className="text-sm"
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                 <Input
+                  placeholder="Location"
+                  value={exp.location}
+                  onChange={(e) => updateExperience(exp.id, "location", e.target.value)}
+                  className="text-sm"
+                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={`current-${exp.id}`}
+                    checked={exp.current}
+                    onChange={(e) => updateExperience(exp.id, "current", e.target.checked)}
+                    className="rounded"
+                  />
+                  <Label htmlFor={`current-${exp.id}`} className="text-xs sm:text-sm">
+                    Current Position
+                  </Label>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <Input
+                  type="date"
                   placeholder="Start Date"
                   value={exp.startDate}
                   onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
                   className="text-sm"
                 />
                 <Input
+                  type="date"
                   placeholder="End Date"
                   value={exp.endDate}
                   onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
@@ -260,26 +387,42 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={() => removeEducation(edu.id)}
+                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
                 >
-                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive" />
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <Input
+                  placeholder="Degree"
+                  value={edu.degree}
+                  onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
+                  className="text-sm"
+                />
+                <Input
+                  placeholder="Institution"
+                  value={edu.institution}
+                  onChange={(e) => updateEducation(edu.id, "institution", e.target.value)}
+                  className="text-sm"
+                />
+                <Input
+                  placeholder="Location"
+                  value={edu.location}
+                  onChange={(e) => updateEducation(edu.id, "location", e.target.value)}
+                  className="text-sm"
+                />
+                <Input
+                  type="date"
+                  placeholder="Graduation Date"
+                  value={edu.graduationDate}
+                  onChange={(e) => updateEducation(edu.id, "graduationDate", e.target.value)}
+                  className="text-sm"
+                />
+              </div>
               <Input
-                placeholder="Degree (e.g., Bachelor of Science in Computer Science)"
-                value={edu.degree}
-                onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
-                className="text-sm"
-              />
-              <Input
-                placeholder="Institution"
-                value={edu.institution}
-                onChange={(e) => updateEducation(edu.id, "institution", e.target.value)}
-                className="text-sm"
-              />
-              <Input
-                placeholder="Graduation Date"
-                value={edu.graduationDate}
-                onChange={(e) => updateEducation(edu.id, "graduationDate", e.target.value)}
+                placeholder="GPA (Optional)"
+                value={edu.gpa}
+                onChange={(e) => updateEducation(edu.id, "gpa", e.target.value)}
                 className="text-sm"
               />
             </div>

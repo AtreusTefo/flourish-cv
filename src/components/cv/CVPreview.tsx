@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { CVData } from "@/pages/Builder";
+import { exportToPDF } from "@/utils/pdfExport";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface CVPreviewProps {
   cvData: CVData;
@@ -8,24 +11,54 @@ interface CVPreviewProps {
 
 const CVPreview = ({ cvData }: CVPreviewProps) => {
   const { personalInfo, summary, experience, education } = cvData;
+  const { toast } = useToast();
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleDownloadPDF = () => {
-    // PDF export will be implemented later
-    console.log("Download PDF");
+  const handleDownloadPDF = async () => {
+    if (!personalInfo.fullName) {
+      toast({
+        title: "Error",
+        description: "Please fill in your name before exporting to PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await exportToPDF("cv-preview-content", `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
+      toast({
+        title: "Success!",
+        description: "Your resume has been downloaded as PDF.",
+      });
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to export PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Live Preview</h2>
-        <Button onClick={handleDownloadPDF} className="bg-gradient-primary">
+        <Button 
+          onClick={handleDownloadPDF} 
+          className="bg-gradient-primary"
+          disabled={isExporting}
+        >
           <Download className="h-4 w-4 mr-2" />
-          Download PDF
+          {isExporting ? "Exporting..." : "Download PDF"}
         </Button>
       </div>
 
       {/* CV Preview Content */}
-      <div className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px]">
+      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px]">
         {/* Header */}
         <div className="text-center border-b pb-4 mb-4">
           <h1 className="text-3xl font-bold text-foreground">

@@ -1,55 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, Sparkles, Download, Lock, User } from "lucide-react";
+import { Sparkles, Download, Lock, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import Navigation from "@/components/Navigation";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-foreground">CVCraft</span>
-            </div>
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                Features
-              </a>
-              <button
-                onClick={() => navigate("/templates")}
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-              >
-                Templates
-              </button>
-              <a href="#how-it-works" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                How It Works
-              </a>
-              {user ? (
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
-                    <User className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => navigate("/profile")}>
-                    Profile
-                  </Button>
-                </div>
-              ) : (
-                <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-                  Login
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-hero py-20 md:py-32">

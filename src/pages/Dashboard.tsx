@@ -1,38 +1,34 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, Edit, Trash2, User, LogOut } from "lucide-react";
-import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { FileText, Plus, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
-import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import Navigation from "@/components/Navigation";
 
 const Dashboard = () => {
+  const { user, loading: authLoading } = useAuth();
+  const { resumes, loading: resumesLoading, deleteResume, fetchResumes } = useResumes();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
-  const { resumes, loading, deleteResume } = useResumes();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !user) {
       navigate("/auth");
+    } else if (user) {
+      fetchResumes();
     }
-  }, [isAuthenticated, navigate]);
+  }, [user, authLoading, navigate]); // Removed fetchResumes from dependencies
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
-
-  const handleDeleteResume = async (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      try {
-        await deleteResume(id);
-        toast.success("Resume deleted successfully");
-      } catch (error) {
-        console.error("Error deleting resume:", error);
-        toast.error("Failed to delete resume");
-      }
+  const handleDeleteResume = async (id: string) => {
+    try {
+      await deleteResume(id);
+      toast.success("Resume deleted successfully");
+    } catch (error) {
+      console.error("Error deleting resume:", error);
+      toast.error("Failed to delete resume");
     }
   };
 
@@ -44,112 +40,104 @@ const Dashboard = () => {
     });
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
-      <div className="min-h-screen bg-cv-bg-gray flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your resumes...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-cv-bg-gray">
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">CVCraft Dashboard</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={() => navigate("/profile")}>
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate("/")}>
-                Home
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <Navigation />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.user_metadata?.full_name || user?.email}!
-          </h1>
-          <p className="text-gray-600">Manage your resumes and create new ones.</p>
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <span className="text-muted-foreground text-lg">›</span>
+            <h2 className="text-2xl font-semibold text-foreground">My Resumes</h2>
+          </div>
+          <p className="text-muted-foreground">Manage and edit your resume collection</p>
         </div>
 
         {/* Create New Resume Button */}
-        <div className="mb-8">
-          <Button 
-            onClick={() => navigate("/builder")} 
-            className="bg-gradient-primary"
-            size="lg"
-          >
-            <Plus className="h-5 w-5 mr-2" />
+        <div className="mb-6">
+          <Button onClick={() => navigate("/builder")} className="gap-2">
+            <Plus className="h-4 w-4" />
             Create New Resume
           </Button>
         </div>
 
         {/* Resumes Grid */}
-        {resumes.length === 0 ? (
+        {resumesLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading resumes...</p>
+          </div>
+        ) : resumes.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
-              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No resumes yet</h3>
-              <p className="text-gray-600 mb-6">
-                Create your first resume to get started with CVCraft.
+              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No resumes yet</h3>
+              <p className="text-muted-foreground mb-4">
+                Create your first resume to get started
               </p>
-              <Button 
-                onClick={() => navigate("/builder")} 
-                className="bg-gradient-primary"
-              >
+              <Button onClick={() => navigate("/builder")}>
                 <Plus className="h-4 w-4 mr-2" />
-                Create Your First Resume
+                Create Resume
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {resumes.map((resume) => (
               <Card key={resume.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-lg truncate">{resume.title}</CardTitle>
-                  <CardDescription>
-                    Template: {resume.template} • Updated {formatDate(resume.updated_at)}
-                  </CardDescription>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg line-clamp-1">
+                        {resume.title || "Untitled Resume"}
+                      </CardTitle>
+                      <div className="mt-1 flex items-center">
+                        {resume.template && (
+                          <Badge variant="secondary" className="text-xs">
+                            {resume.template}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/builder?resume=${resume.id}`)}
-                      className="flex-1"
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteResume(resume.id, resume.title)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => navigate(`/builder?resume=${resume.id}`)}
+                        className="gap-1"
+                      >
+                        <Edit className="h-3 w-3" />
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteResume(resume.id)}
+                        className="gap-1 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Delete
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(resume.updated_at).toLocaleDateString()}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

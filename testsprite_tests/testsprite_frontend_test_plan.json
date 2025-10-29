@@ -1,0 +1,463 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration with Valid Data",
+    "description": "Verify that a user can successfully register with valid email and password, then receive an email verification prompt.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the signup page"
+      },
+      {
+        "type": "action",
+        "description": "Input valid email address and strong password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the signup form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify account is created and email verification message is shown"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Registration with Invalid Email",
+    "description": "Validate that user registration fails with an invalid email format.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the signup page"
+      },
+      {
+        "type": "action",
+        "description": "Input invalid email format and a valid password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the signup form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error is displayed preventing signup"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "User Login with Correct Credentials",
+    "description": "Check that a user can login successfully using a registered email and correct password.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input a valid registered email and correct password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that user is authenticated and redirected to the dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "User Login Failure with Incorrect Password",
+    "description": "Ensure login fails with appropriate error message when an incorrect password is provided.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input registered email and incorrect password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error message is displayed indicating invalid credentials"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Persistent User Session After Login",
+    "description": "Verify that once logged in, user session persists and access is granted on page reloads and navigation, without re-authentication.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login with valid credentials"
+      },
+      {
+        "type": "action",
+        "description": "Reload the browser"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user remains logged in and dashboard is accessible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to resume builder and profile pages"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is granted without additional login"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Access Denied for Protected Routes without Authentication",
+    "description": "Confirm that unauthenticated users are redirected to login page when attempting to access protected routes.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to navigate directly to dashboard, resume builder, and profile pages without login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user is redirected to the authentication page"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Create New Resume with Complete Valid Data",
+    "description": "Test creation of a new resume by filling all required multi-tab form fields with valid data, save, and verify real-time preview updates accordingly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to resume builder"
+      },
+      {
+        "type": "action",
+        "description": "Fill out personal info tab with valid data"
+      },
+      {
+        "type": "action",
+        "description": "Fill out summary, experience, education, and skills tabs with valid entries"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify form validations pass on each tab"
+      },
+      {
+        "type": "action",
+        "description": "Switch between tabs and confirm data persists"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify real-time resume preview updates dynamically with input changes"
+      },
+      {
+        "type": "action",
+        "description": "Save the resume"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify resume is saved successfully and listed on dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Form Validation for Required and Format Constraints",
+    "description": "Verify validation errors appear when submitting incomplete or incorrectly formatted resume form data.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to resume builder form"
+      },
+      {
+        "type": "action",
+        "description": "Leave required fields empty and input malformed data in email or date fields"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to save or proceed to next tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Check for appropriate validation error messages preventing progression"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Edit Existing Resume and Verify Auto-Save",
+    "description": "Confirm that when editing a saved resume, changes are auto-saved periodically and on tab switches without manual save.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open an existing resume from dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Modify multiple fields across different tabs"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify changes appear instantly in resume preview"
+      },
+      {
+        "type": "action",
+        "description": "Switch tabs several times"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify auto-save triggers and updates resume data on server without error"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Resume CRUD Operations on Dashboard",
+    "description": "Test creating, reading, updating, and deleting resumes via dashboard confirm proper UI feedback and data consistency.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Create a new resume and verify it appears in the list"
+      },
+      {
+        "type": "action",
+        "description": "Select a listed resume and update its name or content"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updates persist and reflect in the list"
+      },
+      {
+        "type": "action",
+        "description": "Delete a resume from the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify resume is removed from the list and server database"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Switch and Render Multiple Resume Templates",
+    "description": "Verify that switching between different resume templates correctly updates the real-time preview and maintains user data.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open resume builder with saved resume data"
+      },
+      {
+        "type": "action",
+        "description": "Switch between various templates: Modern Blue, Minimal Classic, Creative Edge, etc."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the preview updates to the selected template style without data loss"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "PDF Export with Style Preservation",
+    "description": "Test exporting resumes to PDF ensuring the generated file preserves selected template styles, layout integrity and completes download successfully.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open a resume with populated fields and selected template"
+      },
+      {
+        "type": "action",
+        "description": "Trigger PDF export action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify exported PDF file downloads correctly"
+      },
+      {
+        "type": "assertion",
+        "description": "Open PDF and check preservation of template styles, fonts, colors, and layout correctness"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "User Profile Update and Avatar Management",
+    "description": "Verify user can update profile information and upload/change avatar with proper validation and persistent storage.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to profile page"
+      },
+      {
+        "type": "action",
+        "description": "Update personal information fields with valid data"
+      },
+      {
+        "type": "action",
+        "description": "Upload a new avatar image"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile updates are saved and avatar displays as expected"
+      },
+      {
+        "type": "action",
+        "description": "Reload page and confirm persisted changes"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Responsive UI Layout on Multiple Device Types",
+    "description": "Verify the user interface renders correctly and remains fully functional on mobile, tablet, and desktop devices.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Access app on desktop resolution viewport"
+      },
+      {
+        "type": "assertion",
+        "description": "Check layout is correct with no overlapping or broken elements"
+      },
+      {
+        "type": "action",
+        "description": "Access app on tablet resolution"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI responsiveness and accessibility of all controls"
+      },
+      {
+        "type": "action",
+        "description": "Access app on mobile viewport"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify mobile navigation, form usability, and preview are functional and readable"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "XSS and CSRF Security Enforcement",
+    "description": "Test that input fields sanitize data properly to prevent Cross-Site Scripting attacks and that CSRF tokens protect authenticated requests.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Input JavaScript or HTML injection strings into form fields"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form and observe any script execution"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify injected scripts are sanitized and not executed"
+      },
+      {
+        "type": "action",
+        "description": "Attempt unauthorized form submissions without CSRF token"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify server rejects requests lacking valid CSRF protection"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Error Handling for Unmatched Routes (404 Page)",
+    "description": "Verify that navigating to an invalid URL shows the 404 Not Found page with correct messaging and navigation options.",
+    "category": "error handling",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Manually input a non-existent route URL in the browser"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the 404 error page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Check error page shows clear message and a link to navigate back to a valid page"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Navigation Flow Maintains Authentication State",
+    "description": "Verify that navigation between landing page, authentication pages, dashboard, builder, and profile respects authentication state without unexpected logouts.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in to the application"
+      },
+      {
+        "type": "action",
+        "description": "Navigate through various internal pages: dashboard, resume builder, templates, profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user remains authenticated and access is granted without additional login prompts"
+      },
+      {
+        "type": "action",
+        "description": "Log out from user account"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify protected routes are no longer accessible and user is redirected to authentication page"
+      }
+    ]
+  }
+]

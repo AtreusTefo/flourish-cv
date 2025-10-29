@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin, Code2 } from "lucide-react";
 
 const TechDeveloperTemplate = ({ data, className = "", primaryColor = "#10B981", secondaryColor = "#14B8A6" }: TemplateProps) => {
   return (
-    <div className={`bg-gray-50 p-12 shadow-lg font-['Poppins'] ${className}`} id="cv-template">
+    <div className={`bg-gray-50 p-12 shadow-lg font-['Poppins'] ${className}`}>
       {/* Header with Gradient */}
       <div className="-mx-12 -mt-12 px-12 py-8 mb-8" style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }}>
         <div className="flex items-center gap-3 mb-3">

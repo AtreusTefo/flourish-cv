@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
 const MinimalClassicTemplate = ({ data, className = "", primaryColor = "#111827", secondaryColor = "#1F2937" }: TemplateProps) => {
   return (
-    <div className={`bg-white p-12 shadow-lg font-['Roboto'] ${className}`} id="cv-template">
+    <div className={`bg-white p-12 shadow-lg font-['Roboto'] ${className}`}>
       {/* Header */}
       <div className="text-center pb-6 mb-6 border-b-2" style={{ borderColor: primaryColor }}>
         <h1 className="text-4xl font-bold uppercase tracking-wider mb-2" style={{ color: primaryColor }}>

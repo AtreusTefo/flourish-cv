@@ -66,6 +66,12 @@ const Navigation = ({
                 >
                   Templates
                 </button>
+                <button
+                  onClick={() => handleNavigation("/blog")}
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                >
+                  Blog
+                </button>
                 <a 
                   href="#how-it-works" 
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
@@ -147,6 +153,12 @@ const Navigation = ({
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
                   >
                     Templates
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/blog")}
+                    className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
+                  >
+                    Blog
                   </button>
                   <a 
                     href="#how-it-works" 

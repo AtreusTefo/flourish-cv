@@ -11,6 +11,7 @@ import Templates from "./pages/Templates";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/builder" element={<Builder />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />

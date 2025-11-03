@@ -334,3 +334,27 @@ Remember, great design supports your content—it should never overshadow your q
     `
   }
 ];
+
+// Categories derived from blog posts
+export const getCategories = (): string[] => {
+  return Array.from(new Set(blogPosts.map((post) => post.category)));
+};
+
+// Get recent posts (first N posts)
+export const getRecentPosts = (count: number = 3): BlogPost[] => {
+  return blogPosts.slice(0, count);
+};
+
+// Filter posts by category
+export const getPostsByCategory = (category: string): BlogPost[] => {
+  return blogPosts.filter((post) => post.category === category);
+};
+
+// Search posts by title or excerpt
+export const searchPosts = (query: string): BlogPost[] => {
+  const lowercaseQuery = query.toLowerCase();
+  return blogPosts.filter((post) => 
+    post.title.toLowerCase().includes(lowercaseQuery) ||
+    post.excerpt.toLowerCase().includes(lowercaseQuery)
+  );
+};

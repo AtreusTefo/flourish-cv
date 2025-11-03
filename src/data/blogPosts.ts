@@ -18,7 +18,7 @@ export const blogPosts: BlogPost[] = [
     author: "Sarah Johnson",
     date: "2025-01-15",
     category: "Career Tips",
-    image: "/placeholder.svg?height=400&width=800&text=Professional+Resume+Tips",
+    image: "/images/blog/professional-resume-tips.jpg",
     content: `
 # How to Create a Professional Resume in 2025
 
@@ -68,7 +68,7 @@ Your resume should tell a story of your professional journey. Tailor it for each
     author: "Michael Chen",
     date: "2025-01-12",
     category: "Templates",
-    image: "/placeholder.svg?height=400&width=800&text=Tech+Resume+Templates",
+    image: "/images/blog/tech-resume-templates.jpg",
     content: `
 # Top 10 Resume Templates for Tech Professionals
 
@@ -131,7 +131,7 @@ Remember to customize any template you choose:
     author: "Emily Rodriguez",
     date: "2025-01-10",
     category: "Best Practices",
-    image: "/placeholder.svg?height=400&width=800&text=Resume+Mistakes+Guide",
+    image: "/images/blog/resume-mistakes-guide.jpg",
     content: `
 # Common Resume Mistakes to Avoid
 
@@ -189,7 +189,7 @@ Avoiding these common mistakes can significantly improve your chances of landing
     author: "David Kim",
     date: "2025-01-08",
     category: "Career Tips",
-    image: "/placeholder.svg?height=400&width=800&text=ATS+Optimization+Guide",
+    image: "/images/blog/ats-optimization-guide.jpg",
     content: `
 # Optimizing Your Resume for ATS Systems
 
@@ -252,7 +252,7 @@ Remember, while ATS optimization is important, your resume still needs to impres
     author: "Dr. Lisa Park",
     date: "2025-01-05",
     category: "Design",
-    image: "/placeholder.svg?height=400&width=800&text=Resume+Psychology+Design",
+    image: "/images/blog/resume-psychology-design.jpg",
     content: `
 # The Psychology of Resume Design
 

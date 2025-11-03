@@ -3,12 +3,20 @@ import { Card } from "@/components/ui/card";
 import { Sparkles, Download, Lock, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import SEOHead from "@/components/SEOHead";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="CVCraft - Professional Resume Builder | Create ATS-Friendly Resumes"
+        description="Build professional, ATS-friendly resumes with our free online resume builder. Choose from beautiful templates, get AI-powered suggestions, and download as PDF instantly."
+        keywords="resume builder, CV builder, free resume maker, ATS resume, professional resume, job application, career builder, resume templates, PDF resume"
+        canonical="https://cvcraft.app/"
+        ogType="website"
+      />
       {/* Navigation */}
       <Navigation />
 

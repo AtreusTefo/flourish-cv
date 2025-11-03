@@ -73,61 +73,41 @@ const Builder = () => {
   // Load existing resume data on component mount
   useEffect(() => {
     const loadResumeData = async () => {
+      // Always try localStorage first for guest users and as fallback
+      const savedData = localStorage.getItem('cv-data');
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          if (parsedData.cv_data) {
+            setCVData(parsedData.cv_data as CVData);
+          }
+        } catch (error) {
+          console.error('Error parsing saved CV data:', error);
+        }
+      }
+
+      // Only try database if user is authenticated
       if (!user) return;
 
       try {
-        // Check if there's a resume ID in localStorage
         const savedResumeId = localStorage.getItem('current-resume-id');
         
         if (savedResumeId && savedResumeId !== 'null' && !savedResumeId.startsWith('mock-')) {
-          // Try to load the resume from the database
           const resume = await ResumeService.getResume(savedResumeId);
           
-          if (resume) {
+          if (resume && resume.cv_data && typeof resume.cv_data === 'object' && !Array.isArray(resume.cv_data)) {
             setCurrentResumeId(resume.id);
-            // Safely cast cv_data to CVData with validation
-            if (resume.cv_data && typeof resume.cv_data === 'object' && !Array.isArray(resume.cv_data)) {
-              setCVData(resume.cv_data as unknown as CVData);
-            } else {
-              console.warn('Invalid cv_data format, falling back to localStorage');
-            }
-            return;
-          }
-        }
-
-        // Fallback to localStorage data if no database resume found
-        const savedData = localStorage.getItem('cv-data');
-        if (savedData) {
-          try {
-            const parsedData = JSON.parse(savedData);
-            if (parsedData.cv_data) {
-              setCVData(parsedData.cv_data as CVData);
-            }
-          } catch (error) {
-            console.error('Error parsing saved CV data:', error);
+            setCVData(resume.cv_data as unknown as CVData);
           }
         }
       } catch (error) {
-        console.error('Error loading resume data:', error);
-        // Fallback to localStorage if database fails
-        const savedData = localStorage.getItem('cv-data');
-        if (savedData) {
-          try {
-            const parsedData = JSON.parse(savedData);
-            if (parsedData.cv_data) {
-              setCVData(parsedData.cv_data as CVData);
-            }
-          } catch (error) {
-            console.error('Error parsing saved CV data:', error);
-          }
-        }
+        console.error('Error loading resume from database:', error);
+        // Data from localStorage is already loaded above, so no additional fallback needed
       }
     };
 
-    if (user && !authLoading) {
-      loadResumeData();
-    }
-  }, [user, authLoading]);
+    loadResumeData();
+  }, [user]);
 
   const handleSaveResume = async () => {
     if (!user) {
@@ -136,8 +116,13 @@ const Builder = () => {
     }
 
     try {
+      // Generate a better default title
+      const defaultTitle = cvData.personalInfo.fullName 
+        ? `${cvData.personalInfo.fullName} - Resume`
+        : `Untitled Resume - ${new Date().toLocaleDateString()}`;
+
       const resumeData = {
-        title: cvData.personalInfo.fullName || "Untitled Resume",
+        title: defaultTitle,
         cv_data: cvData as any,
         template: cvData.template,
       };

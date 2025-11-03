@@ -10,12 +10,10 @@ interface CVPreviewProps {
 }
 
 const CVPreview = ({ cvData }: CVPreviewProps) => {
-  const { personalInfo, summary, experience, education } = cvData;
+  const { personalInfo, summary, experience, education, skills } = cvData;
   const [isExporting, setIsExporting] = useState(false);
 
   const handleDownloadPDF = async () => {
-    console.log('🚀 CVPreview: Download PDF button clicked');
-    
     if (!personalInfo.fullName) {
       toast.error("Please fill in your name before exporting to PDF.");
       return;
@@ -23,26 +21,19 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
 
     try {
       setIsExporting(true);
-      console.log('📋 Attempting to export CV preview');
       
       const elementId = 'cv-preview-content';
-      console.log('🎯 Looking for element with ID:', elementId);
       
       // Check if element exists before attempting export
       const element = document.getElementById(elementId);
       if (!element) {
-        console.error('❌ CV preview element not found:', elementId);
-        console.log('📋 Available elements:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
         throw new Error(`CV preview element not found. Expected ID: ${elementId}`);
       }
       
-      console.log('✅ CV preview element found, starting export...');
       await exportToPDF(elementId, `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
-      console.log('🎉 CV preview export completed successfully');
       
       toast.success("Your resume has been downloaded as PDF.");
     } catch (error) {
-      console.error('❌ CV preview export failed:', error);
       toast.error(`Failed to export PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsExporting(false);
@@ -163,8 +154,27 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
           </div>
         )}
 
+        {/* Skills */}
+        {skills && skills.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-foreground border-b pb-2 mb-3">
+              Skills
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Empty State */}
-        {!personalInfo.fullName && !summary && experience.length === 0 && education.length === 0 && (
+        {!personalInfo.fullName && !summary && experience.length === 0 && education.length === 0 && skills.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             <p>Start filling in your information to see the preview</p>
           </div>

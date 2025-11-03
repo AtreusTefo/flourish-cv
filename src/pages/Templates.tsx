@@ -17,7 +17,7 @@ import AcademicTemplate from "@/components/cv/templates/AcademicTemplate";
 import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
 import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
 import { sampleCVData } from "@/data/sampleCV";
-import { exportToPDF } from "@/utils/pdfExport";
+import { exportToPDF } from "@/utils/pdfExportImproved";
 import { toast } from "sonner";
 
 const Templates = () => {
@@ -112,37 +112,27 @@ const Templates = () => {
     console.log('📋 Available templates:', templates.map(t => t.id));
     
     if (!previewTemplate) {
-      console.error('❌ No template selected for export');
       toast.error("Please preview a template first before downloading PDF.");
       return;
     }
 
     try {
       setIsExporting(true);
-      console.log('📋 Attempting to export template:', previewTemplate);
       
       const elementId = `cv-template-${previewTemplate}`;
-      console.log('🎯 Looking for element with ID:', elementId);
       
       // Use improved PDF export with comprehensive error handling
-      const { exportToPDFEnhanced } = await import('../utils/pdfExportImproved');
+      const { ImprovedPDFExporter } = await import('../utils/pdfExportImproved');
       
-      const result = await exportToPDFEnhanced(elementId, {
+      const result = await ImprovedPDFExporter.exportToPDF(elementId, {
         fileName: `resume-${previewTemplate}.pdf`,
         timeout: 30000,
-        scale: 3,
+        scale: 2, // Use optimized scale
         quality: 0.95,
         maxPages: 10
       });
       
       if (result.success) {
-        console.log('🎉 Improved PDF export completed successfully');
-        console.log('📊 Export metrics:', {
-          fileName: result.fileName,
-          pageCount: result.pageCount,
-          fileSize: result.fileSize
-        });
-        
         // Show success message that TestSprite expects
         setShowExportSuccess(true);
         setTimeout(() => setShowExportSuccess(false), 5000);
@@ -158,8 +148,6 @@ const Templates = () => {
       }
       
     } catch (error) {
-      console.error('❌ Template export failed:', error);
-      
       // Enhanced error handling with specific error types
       let errorTitle = "Export Error";
       let errorDescription = "Failed to export PDF";

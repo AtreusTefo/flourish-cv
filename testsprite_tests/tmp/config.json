@@ -2,17 +2,19 @@
   "status": "commited",
   "type": "frontend",
   "scope": "codebase",
-  "localEndpoint": "http://localhost:8081",
+  "localEndpoint": "http://localhost:8082/templates",
   "loginUser": "rebeldryp@gmail.com",
   "loginPassword": "password",
   "executionArgs": {
     "projectName": "flourish-cv-main",
-    "projectPath": "c:\\Users\\User\\Desktop\\flourish-cv-main\\flourish-cv-main",
-    "testIds": [],
-    "additionalInstruction": "",
+    "projectPath": "C:\\Users\\User\\Desktop\\flourish-cv-main\\flourish-cv-main",
+    "testIds": [
+      "TC011"
+    ],
+    "additionalInstruction": "Running TC011 test with added alert debugging to see if PDF export functions are being called",
     "envs": {
       "API_KEY": "sk-user-s7oQcGIZiPL-UPIg27Q-evGPKB3fsTz1EnHYCdkHY9rKm_hbiIm-bSt1umMC4GjMgWhOdVa2WdgecxTM_0uupjs76G3HIlBo-5iCycCgZ8e7tz03q46o_4W2VL4xAKkyKGI"
     }
   },
-  "proxy": "http://81556d3c-7731-4155-84b3-bd4ae65e7aac:awYPQCtUb18FuwY0PxH67HH6UYDSf12p@tun.testsprite.com:8080"
+  "proxy": "http://799cd415-c445-4ef0-b7d8-5da0447bb24d:pYclnxbJL4gCZHSAxTGiPp4j4lZuxyzu@tun.testsprite.com:8080"
 }

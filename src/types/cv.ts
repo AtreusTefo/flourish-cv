@@ -49,4 +49,5 @@ export interface TemplateProps {
   className?: string;
   primaryColor?: string;
   secondaryColor?: string;
+  id?: string;
 }

@@ -1,67 +1,75 @@
 {
   "tech_stack": [
     "TypeScript",
-    "React 18.3.1",
-    "Vite 5.4.19",
-    "Tailwind CSS 3.4.17",
-    "React Router DOM 6.30.1",
-    "React Hook Form 7.61.1",
-    "Zod",
-    "Radix UI",
-    "shadcn/ui",
+    "React 18",
+    "Vite",
+    "Tailwind CSS",
     "Supabase",
-    "PostgreSQL",
-    "Supabase Auth",
-    "Supabase Realtime",
-    "React Query",
-    "jsPDF 3.0.3",
-    "html2canvas 1.4.1",
-    "Lucide React 0.462.0",
-    "Sonner 1.7.4",
-    "date-fns 3.6.0",
-    "Netlify"
+    "React Router",
+    "Radix UI",
+    "Shadcn/ui",
+    "React Hook Form",
+    "Zod",
+    "html2canvas",
+    "jsPDF",
+    "Tanstack Query",
+    "Lucide React",
+    "React Helmet"
   ],
   "features": [
     {
-      "name": "User Authentication",
-      "description": "Complete authentication system with login, signup, email verification, and protected routes using Supabase Auth",
+      "name": "Authentication System",
+      "description": "User authentication and authorization using Supabase with protected routes and session management",
       "files": [
         "src/pages/Auth.tsx",
         "src/hooks/useAuth.ts",
-        "src/components/ProtectedRoute.tsx",
-        "src/integrations/supabase/client.ts"
+        "src/components/ProtectedRoute.tsx"
       ]
     },
     {
-      "name": "Resume Builder",
-      "description": "Interactive resume builder with multi-tab form validation, real-time preview, and data persistence",
+      "name": "CV Builder",
+      "description": "Interactive CV/Resume builder with form validation, real-time preview, and multi-step form input",
       "files": [
         "src/pages/Builder.tsx",
         "src/components/cv/CVForm.tsx",
         "src/components/cv/CVPreview.tsx",
-        "src/types/cv.ts",
         "src/components/BuilderNavigation.tsx"
       ]
     },
     {
-      "name": "Template System",
-      "description": "Nine professional CV templates with customizable styling and real-time preview",
+      "name": "CV Templates",
+      "description": "Multiple professional CV templates with customizable styling and color schemes",
       "files": [
-        "src/pages/Templates.tsx",
         "src/components/cv/templates/ModernBlueTemplate.tsx",
-        "src/components/cv/templates/MinimalClassicTemplate.tsx",
-        "src/components/cv/templates/CreativeEdgeTemplate.tsx",
-        "src/components/cv/templates/ExecutiveFormalTemplate.tsx",
         "src/components/cv/templates/TechDeveloperTemplate.tsx",
-        "src/components/cv/templates/SimpleElegantTemplate.tsx",
         "src/components/cv/templates/AcademicTemplate.tsx",
         "src/components/cv/templates/BoldModernTemplate.tsx",
-        "src/components/cv/templates/CompactProTemplate.tsx"
+        "src/components/cv/templates/CompactProTemplate.tsx",
+        "src/components/cv/templates/CreativeEdgeTemplate.tsx",
+        "src/components/cv/templates/ExecutiveFormalTemplate.tsx",
+        "src/components/cv/templates/MinimalClassicTemplate.tsx",
+        "src/components/cv/templates/SimpleElegantTemplate.tsx"
       ]
     },
     {
-      "name": "Dashboard Management",
-      "description": "User dashboard for managing multiple resumes with CRUD operations and resume listing",
+      "name": "PDF Export",
+      "description": "Export CV templates to PDF format with proper formatting and styling preservation using html2canvas and jsPDF",
+      "files": [
+        "src/utils/pdfExport.ts",
+        "src/pages/Templates.tsx",
+        "src/components/cv/CVPreview.tsx"
+      ]
+    },
+    {
+      "name": "Templates Gallery",
+      "description": "Browse and preview available CV templates with customization options and template selection",
+      "files": [
+        "src/pages/Templates.tsx"
+      ]
+    },
+    {
+      "name": "User Dashboard",
+      "description": "User dashboard for managing saved resumes, CRUD operations, and profile information",
       "files": [
         "src/pages/Dashboard.tsx",
         "src/hooks/useResumes.ts"
@@ -69,122 +77,83 @@
     },
     {
       "name": "User Profile Management",
-      "description": "User profile system for updating personal information and avatar management",
+      "description": "User profile management with avatar upload and personal information updates",
       "files": [
         "src/pages/Profile.tsx",
         "src/hooks/useProfile.ts"
       ]
     },
     {
-      "name": "PDF Export System",
-      "description": "Export resumes to PDF with template styling preservation using jsPDF and html2canvas",
+      "name": "Blog System",
+      "description": "Blog functionality with articles, pagination, and sidebar navigation for career tips and resources",
       "files": [
-        "src/utils/pdfExport.ts"
+        "src/pages/Blog.tsx",
+        "src/components/blog/BlogCard.tsx",
+        "src/components/blog/BlogSidebar.tsx"
       ]
     },
     {
       "name": "Navigation System",
-      "description": "Responsive navigation with authentication state management and protected routing",
+      "description": "Main navigation and routing system with responsive mobile menu and protected routes",
       "files": [
         "src/components/Navigation.tsx",
-        "src/components/BuilderNavigation.tsx",
-        "src/components/ProtectedRoute.tsx"
-      ]
-    },
-    {
-      "name": "Landing Page",
-      "description": "Marketing landing page with hero section, features showcase, and call-to-action buttons",
-      "files": [
+        "src/App.tsx",
         "src/pages/Index.tsx"
       ]
     },
     {
-      "name": "UI Components Library",
-      "description": "Comprehensive UI component library based on Radix UI and shadcn/ui with 40+ components",
+      "name": "Data Management",
+      "description": "Sample CV data, type definitions, and data sanitization utilities",
       "files": [
-        "src/components/ui/accordion.tsx",
-        "src/components/ui/alert-dialog.tsx",
-        "src/components/ui/alert.tsx",
-        "src/components/ui/aspect-ratio.tsx",
-        "src/components/ui/avatar.tsx",
-        "src/components/ui/badge.tsx",
-        "src/components/ui/breadcrumb.tsx",
-        "src/components/ui/button.tsx",
-        "src/components/ui/calendar.tsx",
-        "src/components/ui/card.tsx",
-        "src/components/ui/carousel.tsx",
-        "src/components/ui/chart.tsx",
-        "src/components/ui/checkbox.tsx",
-        "src/components/ui/collapsible.tsx",
-        "src/components/ui/command.tsx",
-        "src/components/ui/context-menu.tsx",
-        "src/components/ui/dialog.tsx",
-        "src/components/ui/drawer.tsx",
-        "src/components/ui/dropdown-menu.tsx",
-        "src/components/ui/form.tsx",
-        "src/components/ui/hover-card.tsx",
-        "src/components/ui/input-otp.tsx",
-        "src/components/ui/input.tsx",
-        "src/components/ui/label.tsx",
-        "src/components/ui/menubar.tsx",
-        "src/components/ui/navigation-menu.tsx",
-        "src/components/ui/pagination.tsx",
-        "src/components/ui/popover.tsx",
-        "src/components/ui/progress.tsx",
-        "src/components/ui/radio-group.tsx",
-        "src/components/ui/resizable.tsx",
-        "src/components/ui/scroll-area.tsx",
-        "src/components/ui/select.tsx",
-        "src/components/ui/separator.tsx",
-        "src/components/ui/sheet.tsx",
-        "src/components/ui/sidebar.tsx",
-        "src/components/ui/skeleton.tsx",
-        "src/components/ui/slider.tsx",
-        "src/components/ui/sonner.tsx",
-        "src/components/ui/switch.tsx",
-        "src/components/ui/table.tsx",
-        "src/components/ui/tabs.tsx",
-        "src/components/ui/textarea.tsx",
-        "src/components/ui/toast.tsx",
-        "src/components/ui/toaster.tsx",
-        "src/components/ui/toggle-group.tsx",
-        "src/components/ui/toggle.tsx",
-        "src/components/ui/tooltip.tsx",
-        "src/components/ui/use-toast.ts"
-      ]
-    },
-    {
-      "name": "Custom Hooks",
-      "description": "Custom React hooks for authentication, profile management, resume operations, and UI utilities",
-      "files": [
-        "src/hooks/useAuth.ts",
-        "src/hooks/useProfile.ts",
-        "src/hooks/useResumes.ts",
-        "src/hooks/use-toast.ts",
-        "src/hooks/use-mobile.tsx"
-      ]
-    },
-    {
-      "name": "Input Validation and Sanitization",
-      "description": "Data validation and sanitization utilities for secure form handling and XSS prevention",
-      "files": [
+        "src/data/sampleCV.ts",
+        "src/types/cv.ts",
         "src/utils/sanitize.ts"
       ]
     },
     {
-      "name": "Database Integration",
-      "description": "Supabase integration with PostgreSQL database, real-time subscriptions, and type-safe database operations",
+      "name": "Supabase Integration",
+      "description": "Database integration, API client configuration, and type definitions for backend services",
       "files": [
         "src/integrations/supabase/client.ts",
-        "src/integrations/supabase/types.ts",
-        "database_setup.sql"
+        "src/integrations/supabase/types.ts"
       ]
     },
     {
-      "name": "Error Handling",
-      "description": "404 Not Found page and error boundary handling for unmatched routes",
+      "name": "UI Components",
+      "description": "Reusable UI components built with Radix UI and Shadcn/ui for consistent design system",
       "files": [
-        "src/pages/NotFound.tsx"
+        "src/components/ui/button.tsx",
+        "src/components/ui/card.tsx",
+        "src/components/ui/dialog.tsx",
+        "src/components/ui/form.tsx",
+        "src/components/ui/input.tsx",
+        "src/components/ui/select.tsx",
+        "src/components/ui/textarea.tsx",
+        "src/components/ui/toast.tsx",
+        "src/components/ui/badge.tsx",
+        "src/components/ui/skeleton.tsx",
+        "src/components/ui/tooltip.tsx",
+        "src/components/ui/toaster.tsx"
+      ]
+    },
+    {
+      "name": "Utility Functions",
+      "description": "Helper functions for PDF export, data sanitization, and common utilities",
+      "files": [
+        "src/utils/pdfExport.ts",
+        "src/utils/sanitize.ts",
+        "src/lib/utils.ts"
+      ]
+    },
+    {
+      "name": "Custom Hooks",
+      "description": "React hooks for authentication, resume management, profile management, and mobile detection",
+      "files": [
+        "src/hooks/useAuth.ts",
+        "src/hooks/useResumes.ts",
+        "src/hooks/useProfile.ts",
+        "src/hooks/use-toast.ts",
+        "src/hooks/use-mobile.tsx"
       ]
     }
   ]

@@ -1,9 +1,9 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin, GraduationCap } from "lucide-react";
 
-const AcademicTemplate = ({ data, className = "", primaryColor = "#0F172A", secondaryColor = "#1E293B" }: TemplateProps) => {
+const AcademicTemplate = ({ data, className = "", primaryColor = "#7C2D12", secondaryColor = "#A16207", id = "cv-template" }: TemplateProps) => {
   return (
-    <div className={`bg-white p-6 sm:p-8 md:p-12 shadow-lg font-['Merriweather'] ${className}`} id="cv-template">
+    <div className={`bg-white p-6 sm:p-8 md:p-12 shadow-lg font-['Merriweather'] ${className}`} id={id}>
       {/* Header - Academic Style */}
       <div className="text-center mb-6 sm:mb-8 md:mb-10 pb-4 sm:pb-6 md:pb-8 border-b-2 sm:border-b-4" style={{ borderColor: primaryColor }}>
         <div className="flex justify-center mb-3 sm:mb-4">

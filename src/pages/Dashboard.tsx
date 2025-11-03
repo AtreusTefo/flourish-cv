@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import SEOHead from "@/components/SEOHead";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -33,11 +34,22 @@ const Dashboard = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    try {
+      const date = new Date(dateString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        console.warn(`Invalid date string provided: ${dateString}`);
+        return 'Invalid Date';
+      }
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid Date';
+    }
   };
 
   if (authLoading) {
@@ -53,6 +65,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="My Resume Dashboard | Manage Your CVs - CVCraft"
+        description="Access and manage all your resumes in one place. Edit, duplicate, delete, and create new professional resumes with our intuitive dashboard."
+        keywords="resume dashboard, manage resumes, my CVs, resume management, edit resume, create resume, resume collection"
+        canonical="https://cvcraft.app/dashboard"
+        ogType="website"
+        noIndex={true}
+      />
       <Navigation />
 
       {/* Main Content */}

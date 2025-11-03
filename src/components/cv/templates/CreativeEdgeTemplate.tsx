@@ -1,9 +1,9 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
-const CreativeEdgeTemplate = ({ data, className = "", primaryColor = "#9333EA", secondaryColor = "#7E22CE" }: TemplateProps) => {
+const CreativeEdgeTemplate = ({ data, className = "", primaryColor = "#8B5CF6", secondaryColor = "#7C3AED", id = "cv-template" }: TemplateProps) => {
   return (
-    <div className={`bg-white shadow-lg font-['Poppins'] flex ${className}`} id="cv-template">
+    <div className={`bg-white shadow-lg font-['Poppins'] flex ${className}`} id={id}>
       {/* Colored Sidebar */}
       <div className="w-1/3 text-white p-8" style={{ background: `linear-gradient(to bottom, ${primaryColor}, ${secondaryColor})` }}>
         {/* Personal Info */}

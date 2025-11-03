@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { CVData } from "@/pages/Builder";
-import { exportToPDF } from "@/utils/pdfExport";
-import { useToast } from "@/hooks/use-toast";
+import { exportToPDF } from "@/utils/pdfExportImproved";
+import { toast } from "sonner";
 import { useState } from "react";
 
 interface CVPreviewProps {
@@ -11,33 +11,39 @@ interface CVPreviewProps {
 
 const CVPreview = ({ cvData }: CVPreviewProps) => {
   const { personalInfo, summary, experience, education } = cvData;
-  const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleDownloadPDF = async () => {
+    console.log('🚀 CVPreview: Download PDF button clicked');
+    
     if (!personalInfo.fullName) {
-      toast({
-        title: "Error",
-        description: "Please fill in your name before exporting to PDF.",
-        variant: "destructive",
-      });
+      toast.error("Please fill in your name before exporting to PDF.");
       return;
     }
 
-    setIsExporting(true);
     try {
-      await exportToPDF("cv-preview-content", `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
-      toast({
-        title: "Success!",
-        description: "Your resume has been downloaded as PDF.",
-      });
+      setIsExporting(true);
+      console.log('📋 Attempting to export CV preview');
+      
+      const elementId = 'cv-preview-content';
+      console.log('🎯 Looking for element with ID:', elementId);
+      
+      // Check if element exists before attempting export
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.error('❌ CV preview element not found:', elementId);
+        console.log('📋 Available elements:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
+        throw new Error(`CV preview element not found. Expected ID: ${elementId}`);
+      }
+      
+      console.log('✅ CV preview element found, starting export...');
+      await exportToPDF(elementId, `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
+      console.log('🎉 CV preview export completed successfully');
+      
+      toast.success("Your resume has been downloaded as PDF.");
     } catch (error) {
-      console.error("PDF export error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to export PDF. Please try again.",
-        variant: "destructive",
-      });
+      console.error('❌ CV preview export failed:', error);
+      toast.error(`Failed to export PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsExporting(false);
     }
@@ -52,13 +58,26 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
           className="bg-gradient-primary"
           disabled={isExporting}
         >
-          <Download className="h-4 w-4 mr-2" />
+          {isExporting ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4 mr-2" />
+          )}
           {isExporting ? "Exporting..." : "Download PDF"}
         </Button>
       </div>
 
       {/* CV Preview Content */}
-      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px]">
+      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px] relative">
+        {/* Loading overlay during PDF export */}
+        {isExporting && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-primary" />
+              <p className="text-sm text-muted-foreground">Generating PDF...</p>
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="text-center border-b pb-4 mb-4">
           <h1 className="text-3xl font-bold text-foreground">

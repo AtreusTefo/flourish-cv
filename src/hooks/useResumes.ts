@@ -8,11 +8,16 @@ type Resume = Database['public']['Tables']['resumes']['Row'];
 type ResumeInsert = Database['public']['Tables']['resumes']['Insert'];
 type ResumeUpdate = Database['public']['Tables']['resumes']['Update'];
 
+interface ResumeError {
+  message: string;
+  originalError?: any;
+}
+
 export const useResumes = () => {
   const { user, isAuthenticated } = useAuth();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<ResumeError | null>(null);
 
   const fetchResumes = useCallback(async () => {
     if (!user) {
@@ -35,26 +40,16 @@ export const useResumes = () => {
         throw error;
       }
 
-      setResumes(data || []);
+      const fetchedResumes = data || [];
+      setResumes(fetchedResumes);
+      
     } catch (error: any) {
-      // Silently handle database connection errors in development
-      if (error.message?.includes('Failed to fetch') || error.code === 'PGRST301') {
-        console.warn('Database not available - using local storage fallback');
-        // Try to load from localStorage as fallback
-        const localResumes = localStorage.getItem('cvcraft_resumes');
-        if (localResumes) {
-          try {
-            setResumes(JSON.parse(localResumes));
-          } catch {
-            setResumes([]);
-          }
-        } else {
-          setResumes([]);
-        }
-      } else {
-        console.error('Error fetching resumes:', error);
-        setError(error);
-      }
+      console.error('Error fetching resumes:', error);
+      setError({ 
+        message: error.message || 'Failed to fetch resumes. Please check your internet connection.',
+        originalError: error 
+      });
+      setResumes([]);
     } finally {
       setLoading(false);
     }
@@ -91,35 +86,17 @@ export const useResumes = () => {
 
       if (error) throw error;
 
-      setResumes(prev => [data, ...prev]);
+      const updatedResumes = [data, ...resumes];
+      setResumes(updatedResumes);
+      
       return data;
     } catch (error: any) {
-      // Handle database connection errors gracefully
-      if (error.message?.includes('Failed to fetch') || error.code === 'PGRST301') {
-        console.warn('Database not available - saving to local storage');
-        // Create a mock resume object for local storage
-        const mockResume = {
-          id: `local_${Date.now()}`,
-          user_id: user.id,
-          title: resumeData.title,
-          cv_data: resumeData.cv_data,
-          template: resumeData.template,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        // Save to localStorage
-        const localResumes = localStorage.getItem('cvcraft_resumes');
-        const resumes = localResumes ? JSON.parse(localResumes) : [];
-        resumes.unshift(mockResume);
-        localStorage.setItem('cvcraft_resumes', JSON.stringify(resumes));
-        
-        setResumes(prev => [mockResume as any, ...prev]);
-        return mockResume as any;
-      } else {
-        console.error('Error creating resume:', error);
-        throw error;
-      }
+      console.error('Error creating resume:', error);
+      setError({ 
+        message: error.message || 'Failed to create resume. Please check your internet connection.',
+        originalError: error 
+      });
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -140,12 +117,16 @@ export const useResumes = () => {
 
       if (error) throw error;
 
-      setResumes(prev => 
-        prev.map(resume => resume.id === id ? data : resume)
-      );
+      const updatedResumes = resumes.map(resume => resume.id === id ? data : resume);
+      setResumes(updatedResumes);
+      
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating resume:', error);
+      setError({ 
+        message: error.message || 'Failed to update resume. Please check your internet connection.',
+        originalError: error 
+      });
       throw error;
     } finally {
       setLoading(false);
@@ -153,7 +134,7 @@ export const useResumes = () => {
   };
 
   const deleteResume = async (id: string) => {
-    if (!user) return;
+    if (!user) return false;
 
     setLoading(true);
     try {
@@ -165,9 +146,16 @@ export const useResumes = () => {
 
       if (error) throw error;
 
-      setResumes(prev => prev.filter(resume => resume.id !== id));
-    } catch (error) {
+      const updatedResumes = resumes.filter(resume => resume.id !== id);
+      setResumes(updatedResumes);
+      
+      return true;
+    } catch (error: any) {
       console.error('Error deleting resume:', error);
+      setError({ 
+        message: error.message || 'Failed to delete resume. Please check your internet connection.',
+        originalError: error 
+      });
       throw error;
     } finally {
       setLoading(false);
@@ -177,6 +165,7 @@ export const useResumes = () => {
   const getResume = async (id: string) => {
     if (!user) return null;
 
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('resumes')
@@ -188,9 +177,15 @@ export const useResumes = () => {
       if (error) throw error;
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching resume:', error);
+      setError({ 
+        message: error.message || 'Failed to fetch resume. Please check your internet connection.',
+        originalError: error 
+      });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

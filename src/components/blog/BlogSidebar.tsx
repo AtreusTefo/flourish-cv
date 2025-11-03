@@ -94,11 +94,24 @@ const BlogSidebar = ({
                     {post.title}
                   </h4>
                   <time className="text-xs text-muted-foreground" dateTime={post.date}>
-                    {new Date(post.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {(() => {
+                      try {
+                        const date = new Date(post.date);
+                        // Check if the date is valid
+                        if (isNaN(date.getTime())) {
+                          console.warn(`Invalid date string provided: ${post.date}`);
+                          return 'Invalid Date';
+                        }
+                        return date.toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        });
+                      } catch (error) {
+                        console.error('Error formatting date:', error);
+                        return 'Invalid Date';
+                      }
+                    })()}
                   </time>
                 </a>
               </li>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FileText, User, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,22 +33,14 @@ const Navigation = ({
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div 
-            className="flex items-center gap-2 cursor-pointer" 
-            onClick={() => handleNavigation("/")}
-            role="button"
-            tabIndex={0}
+          <Link 
+            to="/"
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
             aria-label="Go to homepage"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleNavigation("/");
-              }
-            }}
           >
             <FileText className="h-6 w-6 text-primary" aria-hidden="true" />
             <span className="text-xl font-bold text-foreground">CVCraft</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
@@ -57,24 +49,34 @@ const Navigation = ({
                 <a 
                   href="#features" 
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('features');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   Features
                 </a>
-                <button
-                  onClick={() => handleNavigation("/templates")}
+                <Link
+                  to="/templates"
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 >
                   Templates
-                </button>
-                <button
-                  onClick={() => handleNavigation("/blog")}
+                </Link>
+                <Link
+                  to="/blog"
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 >
                   Blog
-                </button>
+                </Link>
                 <a 
                   href="#how-it-works" 
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('how-it-works');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   How It Works
                 </a>
@@ -86,26 +88,32 @@ const Navigation = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => handleNavigation("/dashboard")}
+                  asChild
                 >
-                  <User className="h-4 w-4 mr-2" />
-                  Dashboard
+                  <Link to="/dashboard">
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => handleNavigation("/profile")}
+                  asChild
                 >
-                  Profile
+                  <Link to="/profile">
+                    Profile
+                  </Link>
                 </Button>
               </div>
             ) : showAuthButtons ? (
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => handleNavigation("/auth")}
+                asChild
               >
-                Sign In
+                <Link to="/auth">
+                  Sign In
+                </Link>
               </Button>
             ) : null}
           </div>
@@ -144,26 +152,38 @@ const Navigation = ({
                   <a 
                     href="#features" 
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.getElementById('features');
+                      element?.scrollIntoView({ behavior: 'smooth' });
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     Features
                   </a>
-                  <button
-                    onClick={() => handleNavigation("/templates")}
+                  <Link
+                    to="/templates"
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Templates
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/blog")}
+                  </Link>
+                  <Link
+                    to="/blog"
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Blog
-                  </button>
+                  </Link>
                   <a 
                     href="#how-it-works" 
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.getElementById('how-it-works');
+                      element?.scrollIntoView({ behavior: 'smooth' });
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     How It Works
                   </a>
@@ -175,29 +195,35 @@ const Navigation = ({
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => handleNavigation("/dashboard")}
                     className="justify-start"
+                    asChild
                   >
-                    <User className="h-4 w-4 mr-2" />
-                    Dashboard
+                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Link>
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => handleNavigation("/profile")}
                     className="justify-start"
+                    asChild
                   >
-                    Profile
+                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      Profile
+                    </Link>
                   </Button>
                 </>
               ) : showAuthButtons ? (
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => handleNavigation("/auth")}
                   className="justify-start"
+                  asChild
                 >
-                  Sign In
+                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                    Sign In
+                  </Link>
                 </Button>
               ) : null}
             </div>

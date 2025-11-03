@@ -151,6 +151,31 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
     });
   };
 
+  const addSkill = () => {
+    const newSkill = "";
+    setCVData({
+      ...cvData,
+      skills: [...cvData.skills, newSkill],
+    });
+  };
+
+  const updateSkill = (index: number, value: string) => {
+    const sanitizedValue = sanitizeText(value);
+    const updatedSkills = [...cvData.skills];
+    updatedSkills[index] = sanitizedValue;
+    setCVData({
+      ...cvData,
+      skills: updatedSkills,
+    });
+  };
+
+  const removeSkill = (index: number) => {
+    setCVData({
+      ...cvData,
+      skills: cvData.skills.filter((_, i) => i !== index),
+    });
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
@@ -161,11 +186,12 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto" role="tablist" aria-label="Resume sections">
+        <TabsList className="grid w-full grid-cols-5 h-auto" role="tablist" aria-label="Resume sections">
           <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="personal-panel">Personal</TabsTrigger>
           <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="summary-panel">Summary</TabsTrigger>
           <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="experience-panel">Experience</TabsTrigger>
           <TabsTrigger value="education" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="education-panel">Education</TabsTrigger>
+          <TabsTrigger value="skills" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="skills-panel">Skills</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="personal-panel" aria-labelledby="personal-tab">
@@ -430,6 +456,43 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
           <Button onClick={addEducation} variant="outline" className="w-full">
             <Plus className="h-4 w-4 mr-2" />
             Add Education
+          </Button>
+        </TabsContent>
+
+        <TabsContent value="skills" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="skills-panel" aria-labelledby="skills-tab">
+          <fieldset>
+            <legend className="sr-only">Skills</legend>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-sm font-medium">Skills</Label>
+              <p className="text-xs text-muted-foreground">
+                Add your technical and professional skills
+              </p>
+            </div>
+          </fieldset>
+          
+          {cvData.skills.map((skill, index) => (
+            <div key={index} className="flex gap-2 items-center">
+              <Input
+                placeholder="e.g., JavaScript, Project Management, Adobe Photoshop"
+                value={skill}
+                onChange={(e) => updateSkill(index, e.target.value)}
+                className="text-sm flex-1"
+              />
+              <Button
+                onClick={() => removeSkill(index)}
+                variant="outline"
+                size="sm"
+                className="px-2"
+                aria-label={`Remove skill ${index + 1}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          
+          <Button onClick={addSkill} variant="outline" className="w-full">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Skill
           </Button>
         </TabsContent>
       </Tabs>

@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import CVForm from "@/components/cv/CVForm";
 import CVPreview from "@/components/cv/CVPreview";
 import BuilderNavigation from "@/components/BuilderNavigation";
+import SEOHead from "@/components/SEOHead";
 import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
+import { ResumeService } from "@/services/resumeService";
 
 export interface CVData {
   personalInfo: {
@@ -38,14 +40,20 @@ export interface CVData {
     gpa: string;
   }>;
   skills: string[];
-  template: "modern" | "classic" | "minimal";
+  template: "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact";
 }
 
 const Builder = () => {
   const { user, loading: authLoading } = useAuth();
   const { createResume, updateResume, loading: resumeLoading } = useResumes();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [currentResumeId, setCurrentResumeId] = useState<string | null>(null);
+  
+  // Get template from URL parameters, default to "modern"
+  const templateFromUrl = searchParams.get('template') as "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact" | null;
+  const initialTemplate = templateFromUrl || "modern";
+  
   const [cvData, setCVData] = useState<CVData>({
     personalInfo: {
       fullName: "",
@@ -59,8 +67,67 @@ const Builder = () => {
     experience: [],
     education: [],
     skills: [],
-    template: "modern",
+    template: initialTemplate,
   });
+
+  // Load existing resume data on component mount
+  useEffect(() => {
+    const loadResumeData = async () => {
+      if (!user) return;
+
+      try {
+        // Check if there's a resume ID in localStorage
+        const savedResumeId = localStorage.getItem('current-resume-id');
+        
+        if (savedResumeId && savedResumeId !== 'null' && !savedResumeId.startsWith('mock-')) {
+          // Try to load the resume from the database
+          const resume = await ResumeService.getResume(savedResumeId);
+          
+          if (resume) {
+            setCurrentResumeId(resume.id);
+            // Safely cast cv_data to CVData with validation
+            if (resume.cv_data && typeof resume.cv_data === 'object' && !Array.isArray(resume.cv_data)) {
+              setCVData(resume.cv_data as unknown as CVData);
+            } else {
+              console.warn('Invalid cv_data format, falling back to localStorage');
+            }
+            return;
+          }
+        }
+
+        // Fallback to localStorage data if no database resume found
+        const savedData = localStorage.getItem('cv-data');
+        if (savedData) {
+          try {
+            const parsedData = JSON.parse(savedData);
+            if (parsedData.cv_data) {
+              setCVData(parsedData.cv_data as CVData);
+            }
+          } catch (error) {
+            console.error('Error parsing saved CV data:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading resume data:', error);
+        // Fallback to localStorage if database fails
+        const savedData = localStorage.getItem('cv-data');
+        if (savedData) {
+          try {
+            const parsedData = JSON.parse(savedData);
+            if (parsedData.cv_data) {
+              setCVData(parsedData.cv_data as CVData);
+            }
+          } catch (error) {
+            console.error('Error parsing saved CV data:', error);
+          }
+        }
+      }
+    };
+
+    if (user && !authLoading) {
+      loadResumeData();
+    }
+  }, [user, authLoading]);
 
   const handleSaveResume = async () => {
     if (!user) {
@@ -75,25 +142,29 @@ const Builder = () => {
         template: cvData.template,
       };
 
-      // Mock save functionality - simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       if (currentResumeId) {
-        // Mock update
+        // Update existing resume
+        const updatedResume = await ResumeService.updateResume(currentResumeId, resumeData);
         toast.success("Resume updated successfully!");
+        
+        // Store in localStorage as a backup
+        localStorage.setItem('cv-data', JSON.stringify(resumeData));
+        localStorage.setItem('current-resume-id', updatedResume.id);
       } else {
-        // Mock create - generate a fake ID
-        const mockId = `mock-${Date.now()}`;
-        setCurrentResumeId(mockId);
+        // Create new resume
+        const newResume = await ResumeService.createResume(resumeData);
+        setCurrentResumeId(newResume.id);
         toast.success("Resume saved successfully!");
+        
+        // Store in localStorage as a backup
+        localStorage.setItem('cv-data', JSON.stringify(resumeData));
+        localStorage.setItem('current-resume-id', newResume.id);
       }
-      
-      // Store in localStorage as a backup
-      localStorage.setItem('cv-data', JSON.stringify(resumeData));
       
     } catch (error) {
       console.error("Error saving resume:", error);
-      toast.error("Failed to save resume");
+      const errorMessage = error instanceof Error ? error.message : "Failed to save resume";
+      toast.error(errorMessage);
     }
   };
 
@@ -110,6 +181,13 @@ const Builder = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Resume Builder - Create Professional CV | CVCraft"
+        description="Build your professional resume with our intuitive drag-and-drop builder. Real-time preview, ATS-friendly templates, and instant PDF download. Start creating your perfect CV now."
+        keywords="resume builder, CV builder, create resume, professional resume, ATS resume, resume maker, job application, career builder"
+        canonical="https://cvcraft.app/builder"
+        ogType="website"
+      />
       <BuilderNavigation onSave={handleSaveResume} />
       
       <div className="container mx-auto px-4 py-6">

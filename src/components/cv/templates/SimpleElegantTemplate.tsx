@@ -1,9 +1,9 @@
 import { TemplateProps } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
 
-const SimpleElegantTemplate = ({ data, className = "", primaryColor = "#111827", secondaryColor = "#374151" }: TemplateProps) => {
+const SimpleElegantTemplate = ({ data, className = "", primaryColor = "#374151", secondaryColor = "#6B7280", id = "cv-template" }: TemplateProps) => {
   return (
-    <div className={`bg-white p-12 shadow-lg font-['Open_Sans'] ${className}`} id="cv-template">
+    <div className={`bg-white p-12 shadow-lg font-['Open_Sans'] ${className}`} id={id}>
       {/* Minimal Header */}
       <div className="mb-10">
         <h1 className="text-5xl font-light mb-3 tracking-tight" style={{ color: primaryColor }}>

@@ -3,35 +3,155 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CVCraft - Professional Resume Builder</title>
-    <meta name="description" content="Create professional, ATS-friendly resumes in minutes with AI-powered suggestions. Choose from beautiful templates and download as PDF." />
+    
+    <!-- Primary Meta Tags -->
+    <title>CVCraft - Professional Resume Builder | Create ATS-Friendly Resumes</title>
+    <meta name="title" content="CVCraft - Professional Resume Builder | Create ATS-Friendly Resumes" />
+    <meta name="description" content="Create professional, ATS-friendly resumes in minutes with AI-powered suggestions. Choose from beautiful templates, get real-time previews, and download as PDF. Free resume builder with modern templates." />
+    <meta name="keywords" content="resume builder, CV maker, ATS-friendly resume, professional resume templates, free resume builder, PDF resume, job application, career tools, resume templates, online resume builder" />
     <meta name="author" content="CVCraft" />
-
-    <meta property="og:title" content="CVCraft - Professional Resume Builder" />
-    <meta property="og:description" content="Create professional, ATS-friendly resumes in minutes with AI-powered suggestions." />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="theme-color" content="#3B82F6" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://cvcraft.app/" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://cvcraft.app/" />
+    <meta property="og:title" content="CVCraft - Professional Resume Builder | Create ATS-Friendly Resumes" />
+    <meta property="og:description" content="Create professional, ATS-friendly resumes in minutes with AI-powered suggestions. Choose from beautiful templates and download as PDF." />
+    <meta property="og:image" content="https://cvcraft.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="CVCraft" />
+    <meta property="og:locale" content="en_US" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:url" content="https://cvcraft.app/" />
+    <meta name="twitter:title" content="CVCraft - Professional Resume Builder | Create ATS-Friendly Resumes" />
+    <meta name="twitter:description" content="Create professional, ATS-friendly resumes in minutes with AI-powered suggestions. Choose from beautiful templates and download as PDF." />
+    <meta name="twitter:image" content="https://cvcraft.app/og-image.png" />
+    <meta name="twitter:creator" content="@cvcraft" />
+    <meta name="twitter:site" content="@cvcraft" />
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="application-name" content="CVCraft" />
+    <meta name="apple-mobile-web-app-title" content="CVCraft" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "CVCraft",
+      "description": "Professional resume builder with ATS-friendly templates and AI-powered suggestions",
+      "url": "https://cvcraft.app",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "CVCraft"
+      },
+      "featureList": [
+        "ATS-friendly resume templates",
+        "Real-time preview",
+        "PDF export",
+        "AI-powered suggestions",
+        "Multiple template designs",
+        "Auto-save functionality"
+      ]
+    }
+    </script>
 
-    <!-- Google Fonts with fallback -->
+    <!-- Google Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"></noscript>
+    
+    <!-- Load additional fonts asynchronously -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap"></noscript>
     
     <!-- Fallback fonts in CSS -->
     <style>
+      /* Font loading optimization */
+      @font-face {
+        font-family: 'Poppins-fallback';
+        src: local('Arial'), local('Helvetica'), local('sans-serif');
+        font-display: swap;
+      }
+      
       body {
-        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        font-family: 'Poppins', 'Poppins-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        font-display: swap;
+      }
+      
+      /* Ensure fonts load with proper fallbacks */
+      .font-poppins {
+        font-family: 'Poppins', 'Poppins-fallback', system-ui, -apple-system, sans-serif;
+        font-display: swap;
+      }
+      
+      /* Prevent layout shift during font loading */
+      * {
+        font-display: swap;
       }
     </style>
   </head>
 
   <body>
     <div id="root"></div>
+    <!-- Style target for CSS-in-JS libraries -->
+    <div id="style-target" style="display: none;"></div>
+    
+    <!-- Ensure style target availability -->
+    <script>
+      // Ensure style target is available for CSS-in-JS libraries
+      (function() {
+        if (!document.head.querySelector('#css-in-js-target')) {
+          const styleTarget = document.createElement('style');
+          styleTarget.id = 'css-in-js-target';
+          styleTarget.type = 'text/css';
+          document.head.appendChild(styleTarget);
+        }
+        
+        // Prevent font loading errors from blocking rendering
+        document.addEventListener('DOMContentLoaded', function() {
+          // Add font-display: swap to all font-face rules
+          const sheets = document.styleSheets;
+          for (let i = 0; i < sheets.length; i++) {
+            try {
+              const rules = sheets[i].cssRules || sheets[i].rules;
+              for (let j = 0; j < rules.length; j++) {
+                if (rules[j].type === CSSRule.FONT_FACE_RULE) {
+                  if (!rules[j].style.fontDisplay) {
+                    rules[j].style.fontDisplay = 'swap';
+                  }
+                }
+              }
+            } catch (e) {
+              // Ignore cross-origin stylesheet errors
+            }
+          }
+        });
+      })();
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

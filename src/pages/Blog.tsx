@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import Navigation from "@/components/Navigation";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogSidebar from "@/components/blog/BlogSidebar";
+import { blogPosts, getCategories, getRecentPosts } from "@/data/blogPosts";
 import {
   Pagination,
   PaginationContent,
@@ -12,64 +13,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-// Sample blog data
-const blogPosts = [
-  {
-    id: 1,
-    title: "How to Create a Professional Resume in 2025",
-    excerpt: "Learn the latest tips and tricks for crafting a resume that stands out to employers in today's competitive job market.",
-    author: "Sarah Johnson",
-    date: "2025-01-15",
-    category: "Career Tips",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    title: "Top 10 Resume Templates for Tech Professionals",
-    excerpt: "Discover the best resume templates designed specifically for software developers, engineers, and IT specialists.",
-    author: "Michael Chen",
-    date: "2025-01-12",
-    category: "Templates",
-    image: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=800&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Common Resume Mistakes to Avoid",
-    excerpt: "Don't let these common pitfalls ruin your chances. Learn what hiring managers look for and what turns them away.",
-    author: "Emily Rodriguez",
-    date: "2025-01-10",
-    category: "Best Practices",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    title: "Optimizing Your Resume for ATS Systems",
-    excerpt: "Master the art of creating ATS-friendly resumes that pass automated screening systems and reach human recruiters.",
-    author: "David Kim",
-    date: "2025-01-08",
-    category: "Career Tips",
-    image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop",
-  },
-  {
-    id: 5,
-    title: "How to Write a Compelling Cover Letter",
-    excerpt: "Complement your resume with a powerful cover letter that tells your story and captures the employer's attention.",
-    author: "Lisa Thompson",
-    date: "2025-01-05",
-    category: "Writing Tips",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
-  },
-  {
-    id: 6,
-    title: "LinkedIn Profile vs Resume: Key Differences",
-    excerpt: "Understand how to optimize both your LinkedIn profile and resume for maximum career opportunities.",
-    author: "James Wilson",
-    date: "2025-01-03",
-    category: "Best Practices",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop",
-  },
-];
 
 const POSTS_PER_PAGE = 6;
 
@@ -92,7 +35,8 @@ const Blog = () => {
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
   const currentPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
-  const categories = Array.from(new Set(blogPosts.map((post) => post.category)));
+  const categories = getCategories();
+  const recentPosts = getRecentPosts(3);
 
   return (
     <>
@@ -199,7 +143,7 @@ const Blog = () => {
                 onCategoryChange={setSelectedCategory}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                recentPosts={blogPosts.slice(0, 3)}
+                recentPosts={recentPosts}
               />
             </aside>
           </div>

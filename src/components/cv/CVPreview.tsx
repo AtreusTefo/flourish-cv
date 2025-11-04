@@ -1,17 +1,80 @@
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import { CVData } from "@/pages/Builder";
-import { exportToPDF } from "@/utils/pdfExportImproved";
+import { CVData } from "@/types/cv";
 import { toast } from "sonner";
 import { useState } from "react";
+import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
+import MinimalClassicTemplate from "@/components/cv/templates/MinimalClassicTemplate";
+import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate";
+import ExecutiveFormalTemplate from "@/components/cv/templates/ExecutiveFormalTemplate";
+import TechDeveloperTemplate from "@/components/cv/templates/TechDeveloperTemplate";
+import SimpleElegantTemplate from "@/components/cv/templates/SimpleElegantTemplate";
+import AcademicTemplate from "@/components/cv/templates/AcademicTemplate";
+import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
+import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
+import { generateFilenameSafeTitle } from "@/utils/resumeTitleGenerator";
 
 interface CVPreviewProps {
   cvData: CVData;
 }
 
 const CVPreview = ({ cvData }: CVPreviewProps) => {
-  const { personalInfo, summary, experience, education, skills } = cvData;
+  const { personalInfo, summary, experience, education, skills, template } = cvData;
   const [isExporting, setIsExporting] = useState(false);
+
+  // Template mapping
+  const templates = {
+    modern: ModernBlueTemplate,
+    classic: MinimalClassicTemplate,
+    creative: CreativeEdgeTemplate,
+    executive: ExecutiveFormalTemplate,
+    tech: TechDeveloperTemplate,
+    elegant: SimpleElegantTemplate,
+    academic: AcademicTemplate,
+    bold: BoldModernTemplate,
+    compact: CompactProTemplate,
+  };
+
+  // Convert Builder CVData format to Template CVData format
+  const convertToTemplateData = (builderData: CVData): CVData => {
+    return {
+      personalInfo: {
+        fullName: builderData.personalInfo.fullName || "",
+        jobTitle: builderData.personalInfo.jobTitle || "",
+        email: builderData.personalInfo.email || "",
+        phone: builderData.personalInfo.phone || "",
+        address: builderData.personalInfo.address || "",
+        website: builderData.personalInfo.website || "",
+        linkedin: builderData.personalInfo.linkedin || "",
+      },
+      summary: builderData.summary || "",
+      experience: builderData.experience.map(exp => ({
+        id: exp.id,
+        position: exp.position,
+        company: exp.company,
+        location: exp.location,
+        startDate: exp.startDate,
+        endDate: exp.endDate,
+        current: exp.current,
+        description: exp.description,
+      })),
+      education: builderData.education.map(edu => ({
+        id: edu.id,
+        degree: edu.degree,
+        institution: edu.institution,
+        location: edu.location,
+        startDate: edu.startDate,
+        endDate: edu.endDate,
+        current: edu.current,
+        description: edu.description,
+      })),
+      skills: builderData.skills || [],
+      template: builderData.template || "modern",
+    };
+  };
+
+  const templateData = convertToTemplateData(cvData);
+  const TemplateComponent = templates[template] || templates.modern;
 
   const handleDownloadPDF = async () => {
     if (!personalInfo.fullName) {
@@ -30,7 +93,16 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
         throw new Error(`CV preview element not found. Expected ID: ${elementId}`);
       }
       
-      await exportToPDF(elementId, `${personalInfo.fullName.replace(/\s+/g, '_')}_resume.pdf`);
+      // Generate a better filename using the utility
+      const filename = generateFilenameSafeTitle({
+        personalInfo: cvData.personalInfo,
+        template: cvData.template,
+        experience: cvData.experience,
+      }) + '.pdf';
+      
+      // Dynamic import for PDF export to reduce bundle size
+      const { exportToPDF } = await import("@/utils/pdfExportImproved");
+      await exportToPDF(elementId, filename);
       
       toast.success("Your resume has been downloaded as PDF.");
     } catch (error) {
@@ -41,144 +113,36 @@ const CVPreview = ({ cvData }: CVPreviewProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Live Preview</h2>
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      {/* Download Button */}
+      <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-foreground">Resume Preview</h2>
         <Button 
           onClick={handleDownloadPDF} 
-          className="bg-gradient-primary"
           disabled={isExporting}
+          className="bg-gradient-primary"
         >
           {isExporting ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Exporting...
+            </>
           ) : (
-            <Download className="h-4 w-4 mr-2" />
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Download PDF
+            </>
           )}
-          {isExporting ? "Exporting..." : "Download PDF"}
         </Button>
       </div>
 
-      {/* CV Preview Content */}
-      <div id="cv-preview-content" className="border rounded-lg p-8 bg-white shadow-sm min-h-[700px] relative">
-        {/* Loading overlay during PDF export */}
-        {isExporting && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
-            <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-primary" />
-              <p className="text-sm text-muted-foreground">Generating PDF...</p>
-            </div>
-          </div>
-        )}
-        {/* Header */}
-        <div className="text-center border-b pb-4 mb-4">
-          <h1 className="text-3xl font-bold text-foreground">
-            {personalInfo.fullName || "Your Name"}
-          </h1>
-          <div className="flex flex-wrap justify-center gap-3 mt-2 text-sm text-muted-foreground">
-            {personalInfo.email && <span>{personalInfo.email}</span>}
-            {personalInfo.phone && <span>• {personalInfo.phone}</span>}
-            {personalInfo.location && <span>• {personalInfo.location}</span>}
-          </div>
-          <div className="flex flex-wrap justify-center gap-3 mt-1 text-sm text-primary">
-            {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-            {personalInfo.website && <span>• {personalInfo.website}</span>}
-          </div>
-        </div>
-
-        {/* Summary */}
-        {summary && (
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground border-b pb-2 mb-3">
-              Professional Summary
-            </h2>
-            <p className="text-sm text-foreground leading-relaxed">{summary}</p>
-          </div>
-        )}
-
-        {/* Experience */}
-        {experience.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground border-b pb-2 mb-3">
-              Work Experience
-            </h2>
-            <div className="space-y-4">
-              {experience.map((exp) => (
-                <div key={exp.id}>
-                  <div className="flex justify-between items-start mb-1">
-                    <div>
-                      <h3 className="font-semibold text-foreground">{exp.title || "Job Title"}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {exp.company || "Company"}{exp.location ? `, ${exp.location}` : ""}
-                      </p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {exp.startDate || "Start"} - {exp.current ? "Present" : exp.endDate || "End"}
-                    </p>
-                  </div>
-                  {exp.description && (
-                    <p className="text-sm text-foreground mt-2 leading-relaxed whitespace-pre-line">
-                      {exp.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Education */}
-        {education.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground border-b pb-2 mb-3">
-              Education
-            </h2>
-            <div className="space-y-3">
-              {education.map((edu) => (
-                <div key={edu.id}>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-foreground">
-                        {edu.degree || "Degree"}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {edu.institution || "Institution"}{edu.location ? `, ${edu.location}` : ""}
-                      </p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {edu.graduationDate || "Graduation Date"}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Skills */}
-        {skills && skills.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground border-b pb-2 mb-3">
-              Skills
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!personalInfo.fullName && !summary && experience.length === 0 && education.length === 0 && skills.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Start filling in your information to see the preview</p>
-          </div>
-        )}
+      {/* CV Content using selected template */}
+      <div id="cv-preview-content" className="bg-white">
+        <TemplateComponent 
+          data={templateData} 
+          id="cv-preview-content"
+          className="min-h-[800px]"
+        />
       </div>
     </div>
   );

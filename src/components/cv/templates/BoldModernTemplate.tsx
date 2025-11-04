@@ -13,7 +13,7 @@ const BoldModernTemplate = ({ data, className = "", primaryColor = "#DC2626", se
             </div>
           </div>
           <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2 sm:mb-3 tracking-tight">{data.personalInfo.name}</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2 sm:mb-3 tracking-tight">{data.personalInfo.fullName}</h1>
             <p className="text-lg sm:text-xl md:text-2xl font-light mb-4 sm:mb-6" style={{ color: primaryColor + "15" }}>{data.personalInfo.jobTitle}</p>
             
             {/* Contact Info */}

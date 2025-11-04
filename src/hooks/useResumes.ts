@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useAuth } from './useAuth';
-import { CVData } from '@/pages/Builder';
+import { CVData } from '@/types/cv';
+
+type Json = Database['public']['Tables']['resumes']['Row']['cv_data'];
 
 type Resume = Database['public']['Tables']['resumes']['Row'];
 type ResumeInsert = Database['public']['Tables']['resumes']['Insert'];
@@ -10,7 +12,7 @@ type ResumeUpdate = Database['public']['Tables']['resumes']['Update'];
 
 interface ResumeError {
   message: string;
-  originalError?: any;
+  originalError?: unknown;
 }
 
 export const useResumes = () => {
@@ -43,10 +45,10 @@ export const useResumes = () => {
       const fetchedResumes = data || [];
       setResumes(fetchedResumes);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching resumes:', error);
       setError({ 
-        message: error.message || 'Failed to fetch resumes. Please check your internet connection.',
+        message: error instanceof Error ? error.message : 'Failed to fetch resumes. Please check your internet connection.',
         originalError: error 
       });
       setResumes([]);
@@ -62,7 +64,7 @@ export const useResumes = () => {
       setResumes([]);
       setError(null);
     }
-  }, [isAuthenticated, user]); // Removed fetchResumes from dependencies
+  }, [isAuthenticated, user, fetchResumes]);
 
   const createResume = async (resumeData: {
     title: string;
@@ -78,7 +80,7 @@ export const useResumes = () => {
         .insert({
           user_id: user.id,
           title: resumeData.title,
-          cv_data: resumeData.cv_data as any,
+          cv_data: resumeData.cv_data as unknown as Json,
           template: resumeData.template,
         })
         .select()
@@ -90,10 +92,10 @@ export const useResumes = () => {
       setResumes(updatedResumes);
       
       return data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating resume:', error);
       setError({ 
-        message: error.message || 'Failed to create resume. Please check your internet connection.',
+        message: error instanceof Error ? error.message : 'Failed to create resume. Please check your internet connection.',
         originalError: error 
       });
       throw error;
@@ -121,10 +123,10 @@ export const useResumes = () => {
       setResumes(updatedResumes);
       
       return data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating resume:', error);
       setError({ 
-        message: error.message || 'Failed to update resume. Please check your internet connection.',
+        message: error instanceof Error ? error.message : 'Failed to update resume. Please check your internet connection.',
         originalError: error 
       });
       throw error;
@@ -150,10 +152,10 @@ export const useResumes = () => {
       setResumes(updatedResumes);
       
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting resume:', error);
       setError({ 
-        message: error.message || 'Failed to delete resume. Please check your internet connection.',
+        message: error instanceof Error ? error.message : 'Failed to delete resume. Please check your internet connection.',
         originalError: error 
       });
       throw error;
@@ -177,10 +179,10 @@ export const useResumes = () => {
       if (error) throw error;
 
       return data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching resume:', error);
       setError({ 
-        message: error.message || 'Failed to fetch resume. Please check your internet connection.',
+        message: error instanceof Error ? error.message : 'Failed to fetch resume. Please check your internet connection.',
         originalError: error 
       });
       throw error;

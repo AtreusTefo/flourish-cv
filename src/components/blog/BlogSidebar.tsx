@@ -55,11 +55,21 @@ const BlogSidebar = ({
           <CardTitle className="text-lg">Categories</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
             <Badge
               variant={selectedCategory === null ? "default" : "outline"}
               className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
               onClick={() => onCategoryChange(null)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={selectedCategory === null}
+              aria-label="Show all categories"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onCategoryChange(null);
+                }
+              }}
             >
               All
             </Badge>
@@ -69,6 +79,16 @@ const BlogSidebar = ({
                 variant={selectedCategory === category ? "default" : "outline"}
                 className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
                 onClick={() => onCategoryChange(category)}
+                role="button"
+                tabIndex={0}
+                aria-pressed={selectedCategory === category}
+                aria-label={`Filter by ${category} category`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onCategoryChange(category);
+                  }
+                }}
               >
                 {category}
               </Badge>

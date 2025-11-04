@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FileText, User, Menu, X } from "lucide-react";
@@ -18,6 +18,8 @@ const Navigation = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -27,6 +29,31 @@ const Navigation = ({
     navigate(path);
     setIsMobileMenuOpen(false);
   };
+
+  // Handle keyboard navigation for mobile menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isMobileMenuOpen) return;
+
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
+  // Focus management for mobile menu
+  useEffect(() => {
+    if (isMobileMenuOpen && mobileMenuRef.current) {
+      const firstFocusableElement = mobileMenuRef.current.querySelector(
+        'a, button, [tabindex]:not([tabindex="-1"])'
+      ) as HTMLElement;
+      firstFocusableElement?.focus();
+    }
+  }, [isMobileMenuOpen]);
 
   return (
     <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50" role="navigation" aria-label="Main navigation">
@@ -121,6 +148,7 @@ const Navigation = ({
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <Button
+              ref={menuButtonRef}
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
@@ -141,6 +169,7 @@ const Navigation = ({
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
           <div 
+            ref={mobileMenuRef}
             className="md:hidden mt-4 pb-4 border-t pt-4" 
             id="mobile-menu"
             role="menu"

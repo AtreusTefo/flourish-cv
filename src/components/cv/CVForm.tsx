@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Sparkles, Trash2, AlertCircle } from "lucide-react";
-import { CVData } from "@/pages/Builder";
+import { CVData } from "@/types/cv";
 import { sanitizeText, sanitizeHtml, validateEmail, validatePhone, validateUrl } from "@/utils/sanitize";
 import { useState, useEffect } from "react";
 
@@ -82,7 +82,7 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
         ...cvData.experience,
         {
           id: Date.now().toString(),
-          title: "",
+          position: "",
           company: "",
           location: "",
           startDate: "",
@@ -94,7 +94,7 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
     });
   };
 
-  const updateExperience = (id: string, field: string, value: any) => {
+  const updateExperience = (id: string, field: string, value: string | boolean) => {
     let sanitizedValue = value;
     
     if (typeof value === 'string') {
@@ -126,7 +126,10 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
           degree: "",
           institution: "",
           location: "",
-          graduationDate: "",
+          startDate: "",
+          endDate: "",
+          current: false,
+          description: "",
           gpa: "",
         },
       ],
@@ -256,8 +259,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
             <Label htmlFor="location" className="text-sm">Location</Label>
             <Input
               id="location"
-              value={cvData.personalInfo.location}
-              onChange={(e) => updatePersonalInfo("location", e.target.value)}
+              value={cvData.personalInfo.address}
+              onChange={(e) => updatePersonalInfo("address", e.target.value)}
               placeholder="New York, NY"
             />
           </div>
@@ -336,8 +339,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 <Input
                   placeholder="Job Title"
-                  value={exp.title}
-                  onChange={(e) => updateExperience(exp.id, "title", e.target.value)}
+                  value={exp.position}
+                  onChange={(e) => updateExperience(exp.id, "position", e.target.value)}
                   className="text-sm"
                 />
                 <Input
@@ -440,8 +443,8 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 <Input
                   type="date"
                   placeholder="Graduation Date"
-                  value={edu.graduationDate}
-                  onChange={(e) => updateEducation(edu.id, "graduationDate", e.target.value)}
+                  value={edu.endDate}
+                  onChange={(e) => updateEducation(edu.id, "endDate", e.target.value)}
                   className="text-sm"
                 />
               </div>

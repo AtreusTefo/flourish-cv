@@ -8,7 +8,7 @@ const CreativeEdgeTemplate = ({ data, className = "", primaryColor = "#8B5CF6", 
       <div className="w-1/3 text-white p-8" style={{ background: `linear-gradient(to bottom, ${primaryColor}, ${secondaryColor})` }}>
         {/* Personal Info */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{data.personalInfo.name}</h1>
+          <h1 className="text-3xl font-bold mb-2">{data.personalInfo.fullName}</h1>
           <p className="font-medium" style={{ color: primaryColor + "CC" }}>{data.personalInfo.jobTitle}</p>
         </div>
 

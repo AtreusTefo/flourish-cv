@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,38 +10,9 @@ import SEOHead from "@/components/SEOHead";
 import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import { ResumeService } from "@/services/resumeService";
-
-export interface CVData {
-  personalInfo: {
-    fullName: string;
-    email: string;
-    phone: string;
-    location: string;
-    linkedin: string;
-    website: string;
-  };
-  summary: string;
-  experience: Array<{
-    id: string;
-    title: string;
-    company: string;
-    location: string;
-    startDate: string;
-    endDate: string;
-    current: boolean;
-    description: string;
-  }>;
-  education: Array<{
-    id: string;
-    degree: string;
-    institution: string;
-    location: string;
-    graduationDate: string;
-    gpa: string;
-  }>;
-  skills: string[];
-  template: "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact";
-}
+import { logger } from "@/utils/logger";
+import { generateResumeTitle } from "@/utils/resumeTitleGenerator";
+import { CVData } from "@/types/cv";
 
 const Builder = () => {
   const { user, loading: authLoading } = useAuth();
@@ -50,6 +21,10 @@ const Builder = () => {
   const [searchParams] = useSearchParams();
   const [currentResumeId, setCurrentResumeId] = useState<string | null>(null);
   
+  // Auto-save state management
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  
   // Get template from URL parameters, default to "modern"
   const templateFromUrl = searchParams.get('template') as "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact" | null;
   const initialTemplate = templateFromUrl || "modern";
@@ -57,9 +32,10 @@ const Builder = () => {
   const [cvData, setCVData] = useState<CVData>({
     personalInfo: {
       fullName: "",
+      jobTitle: "",
       email: "",
       phone: "",
-      location: "",
+      address: "",
       linkedin: "",
       website: "",
     },
@@ -73,41 +49,136 @@ const Builder = () => {
   // Load existing resume data on component mount
   useEffect(() => {
     const loadResumeData = async () => {
-      // Always try localStorage first for guest users and as fallback
-      const savedData = localStorage.getItem('cv-data');
-      if (savedData) {
+      if (user) {
+        // For authenticated users: Use database as single source of truth
         try {
-          const parsedData = JSON.parse(savedData);
-          if (parsedData.cv_data) {
-            setCVData(parsedData.cv_data as CVData);
-          }
-        } catch (error) {
-          console.error('Error parsing saved CV data:', error);
-        }
-      }
-
-      // Only try database if user is authenticated
-      if (!user) return;
-
-      try {
-        const savedResumeId = localStorage.getItem('current-resume-id');
-        
-        if (savedResumeId && savedResumeId !== 'null' && !savedResumeId.startsWith('mock-')) {
-          const resume = await ResumeService.getResume(savedResumeId);
+          const savedResumeId = localStorage.getItem('current-resume-id');
           
-          if (resume && resume.cv_data && typeof resume.cv_data === 'object' && !Array.isArray(resume.cv_data)) {
-            setCurrentResumeId(resume.id);
-            setCVData(resume.cv_data as unknown as CVData);
+          if (savedResumeId && savedResumeId !== 'null' && !savedResumeId.startsWith('mock-')) {
+            const resume = await ResumeService.getResume(savedResumeId);
+            
+            if (resume && resume.cv_data && typeof resume.cv_data === 'object' && !Array.isArray(resume.cv_data)) {
+              setCurrentResumeId(resume.id);
+              setCVData(resume.cv_data as unknown as CVData);
+              return; // Successfully loaded from database
+            }
           }
+          
+          // If no saved resume ID or resume not found, user starts with empty form
+          toast.info("Starting with a new resume. Your data will be saved to your account when you save.");
+          
+        } catch (error) {
+          logger.error('Error loading resume from database', error, { component: 'Builder', action: 'loadResumeData' });
+          toast.error("Failed to load your resume from the database. Please try refreshing the page.");
         }
-      } catch (error) {
-        console.error('Error loading resume from database:', error);
-        // Data from localStorage is already loaded above, so no additional fallback needed
+      } else {
+        // For guest users: Use localStorage ONLY with clear messaging
+        try {
+          const savedData = localStorage.getItem('cv-data');
+          if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            if (parsedData.cv_data) {
+              setCVData(parsedData.cv_data as CVData);
+              toast.info("Loaded your draft from local storage. Sign in to save permanently.");
+              return;
+            }
+          }
+          
+          // No saved data for guest user
+          toast.info("Welcome! Your changes will be saved locally. Sign in to save permanently to your account.");
+          
+        } catch (error) {
+          logger.error('Error parsing saved CV data', error, { component: 'Builder', action: 'loadResumeData' });
+          toast.error("Failed to load your local draft. Starting with a fresh resume.");
+        }
       }
     };
 
     loadResumeData();
   }, [user]);
+
+  // Auto-save function with debouncing
+  const autoSave = useCallback(async () => {
+    if (!user) {
+      // For guest users, save to localStorage
+      try {
+        const title = generateResumeTitle({
+          personalInfo: cvData.personalInfo,
+          template: cvData.template,
+          experience: cvData.experience,
+        });
+        
+        const resumeData = {
+          title,
+          cv_data: cvData,
+          template: cvData.template,
+        };
+        localStorage.setItem('cv-data', JSON.stringify(resumeData));
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      } catch (error) {
+        logger.error('Error auto-saving to localStorage', error, { component: 'Builder', action: 'autoSave' });
+        setAutoSaveStatus('error');
+        setTimeout(() => setAutoSaveStatus('idle'), 3000);
+      }
+      return;
+    }
+
+    // For authenticated users, save to database
+    try {
+      setAutoSaveStatus('saving');
+      
+      const defaultTitle = generateResumeTitle({
+        personalInfo: cvData.personalInfo,
+        template: cvData.template,
+        experience: cvData.experience,
+      });
+
+      const resumeData = {
+        title: defaultTitle,
+        cv_data: cvData,
+        template: cvData.template,
+      };
+
+      if (currentResumeId) {
+        await ResumeService.updateResume(currentResumeId, resumeData);
+      } else {
+        const newResume = await ResumeService.createResume(resumeData);
+        setCurrentResumeId(newResume.id);
+        localStorage.setItem('current-resume-id', newResume.id);
+      }
+      
+      setAutoSaveStatus('saved');
+      setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      
+    } catch (error) {
+      logger.error('Error auto-saving resume', error, { component: 'Builder', action: 'autoSave', userId: user?.id });
+      setAutoSaveStatus('error');
+      setTimeout(() => setAutoSaveStatus('idle'), 3000);
+    }
+  }, [user, cvData, currentResumeId, setAutoSaveStatus]);
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    // Clear existing timeout
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+
+    // Set new timeout for auto-save after 2 seconds of no changes
+    const timeout = setTimeout(() => {
+      autoSave();
+    }, 2000);
+
+    setAutoSaveTimeout(timeout);
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [cvData, user, currentResumeId, autoSave, autoSaveTimeout]); // Trigger on cvData changes
 
   const handleSaveResume = async () => {
     if (!user) {
@@ -116,14 +187,16 @@ const Builder = () => {
     }
 
     try {
-      // Generate a better default title
-      const defaultTitle = cvData.personalInfo.fullName 
-        ? `${cvData.personalInfo.fullName} - Resume`
-        : `Untitled Resume - ${new Date().toLocaleDateString()}`;
+      // Generate a better default title using the new utility
+      const defaultTitle = generateResumeTitle({
+        personalInfo: cvData.personalInfo,
+        template: cvData.template,
+        experience: cvData.experience,
+      });
 
       const resumeData = {
         title: defaultTitle,
-        cv_data: cvData as any,
+        cv_data: cvData,
         template: cvData.template,
       };
 
@@ -147,7 +220,7 @@ const Builder = () => {
       }
       
     } catch (error) {
-      console.error("Error saving resume:", error);
+      logger.error('Error saving resume', error, { component: 'Builder', action: 'handleSaveResume', userId: user?.id });
       const errorMessage = error instanceof Error ? error.message : "Failed to save resume";
       toast.error(errorMessage);
     }
@@ -174,6 +247,40 @@ const Builder = () => {
         ogType="website"
       />
       <BuilderNavigation onSave={handleSaveResume} />
+      
+      {/* Auto-save status indicator */}
+      {autoSaveStatus !== 'idle' && (
+        <div className="fixed top-20 right-4 z-50">
+          <div className={`px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 ${
+            autoSaveStatus === 'saving' ? 'bg-blue-100 text-blue-800' :
+            autoSaveStatus === 'saved' ? 'bg-green-100 text-green-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {autoSaveStatus === 'saving' && (
+              <>
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+                Saving...
+              </>
+            )}
+            {autoSaveStatus === 'saved' && (
+              <>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Saved
+              </>
+            )}
+            {autoSaveStatus === 'error' && (
+              <>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                Save failed
+              </>
+            )}
+          </div>
+        </div>
+      )}
       
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[calc(100vh-120px)]">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useAuth } from './useAuth';
@@ -12,15 +12,7 @@ export const useProfile = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-    }
-  }, [isAuthenticated, user]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -41,7 +33,15 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchProfile();
+    } else {
+      setProfile(null);
+    }
+  }, [isAuthenticated, user, fetchProfile]);
 
   const createProfile = async (profileData: Omit<ProfileInsert, 'id'>) => {
     if (!user) return null;

@@ -1,13 +1,15 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { CVData } from '@/types/cv';
 
+type Json = Database['public']['Tables']['resumes']['Row']['cv_data'];
 type Resume = Database['public']['Tables']['resumes']['Row'];
 type ResumeInsert = Database['public']['Tables']['resumes']['Insert'];
 type ResumeUpdate = Database['public']['Tables']['resumes']['Update'];
 
 export interface ResumeData {
   title: string;
-  cv_data: any;
+  cv_data: CVData;
   template: string;
 }
 
@@ -27,7 +29,7 @@ export class ResumeService {
       .insert({
         user_id: user.id,
         title: resumeData.title,
-        cv_data: resumeData.cv_data,
+        cv_data: resumeData.cv_data as unknown as Json,
         template: resumeData.template,
       })
       .select()
@@ -54,7 +56,7 @@ export class ResumeService {
     const updateData: ResumeUpdate = {};
     
     if (resumeData.title !== undefined) updateData.title = resumeData.title;
-    if (resumeData.cv_data !== undefined) updateData.cv_data = resumeData.cv_data;
+    if (resumeData.cv_data !== undefined) updateData.cv_data = resumeData.cv_data as unknown as Json;
     if (resumeData.template !== undefined) updateData.template = resumeData.template;
 
     const { data, error } = await supabase

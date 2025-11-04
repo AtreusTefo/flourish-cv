@@ -7,7 +7,7 @@ const MinimalClassicTemplate = ({ data, className = "", primaryColor = "#111827"
       {/* Header */}
       <div className="text-center pb-6 mb-6 border-b-2" style={{ borderColor: primaryColor }}>
         <h1 className="text-4xl font-bold uppercase tracking-wider mb-2" style={{ color: primaryColor }}>
-          {data.personalInfo.name}
+          {data.personalInfo.fullName}
         </h1>
         <p className="text-lg text-gray-700 font-medium mb-3">{data.personalInfo.jobTitle}</p>
         

@@ -17,7 +17,7 @@ const CompactProTemplate = ({ data, className = "", primaryColor = "#059669", se
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: primaryColor }}>
-                {data.personalInfo.name}
+                {data.personalInfo.fullName}
               </h1>
               <p className="text-base sm:text-lg text-gray-700 font-medium">{data.personalInfo.jobTitle}</p>
             </div>

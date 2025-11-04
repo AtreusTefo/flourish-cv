@@ -1,6 +1,6 @@
 export interface CVData {
   personalInfo: {
-    name: string;
+    fullName: string;
     jobTitle: string;
     email: string;
     phone: string;
@@ -28,6 +28,7 @@ export interface CVData {
     endDate: string;
     current: boolean;
     description: string;
+    gpa?: string;
   }>;
   skills: string[];
   projects?: Array<{
@@ -42,6 +43,7 @@ export interface CVData {
     proficiency: string;
   }>;
   interests?: string[];
+  template: string;
 }
 
 export interface TemplateProps {

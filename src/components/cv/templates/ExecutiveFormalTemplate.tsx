@@ -6,7 +6,7 @@ const ExecutiveFormalTemplate = ({ data, className = "", primaryColor = "#1F2937
     <div className={`bg-white p-12 shadow-lg font-['Roboto'] ${className}`} id={id}>
       {/* Header with Gray Background */}
       <div className="-mx-12 -mt-12 px-12 py-8 mb-8 text-white" style={{ backgroundColor: primaryColor }}>
-        <h1 className="text-4xl font-bold mb-2">{data.personalInfo.name}</h1>
+        <h1 className="text-4xl font-bold mb-2">{data.personalInfo.fullName}</h1>
         <p className="text-xl text-gray-300 font-light tracking-wide">{data.personalInfo.jobTitle}</p>
       </div>
 

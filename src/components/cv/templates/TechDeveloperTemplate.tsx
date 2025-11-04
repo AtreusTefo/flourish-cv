@@ -9,7 +9,7 @@ const TechDeveloperTemplate = ({ data, className = "", primaryColor = "#06B6D4",
         <div className="flex items-center gap-3 mb-3">
           <Code2 className="w-10 h-10 text-white" />
           <div>
-            <h1 className="text-4xl font-bold text-white">{data.personalInfo.name}</h1>
+            <h1 className="text-4xl font-bold text-white">{data.personalInfo.fullName}</h1>
             <p className="text-xl text-emerald-100 font-light">{data.personalInfo.jobTitle}</p>
           </div>
         </div>

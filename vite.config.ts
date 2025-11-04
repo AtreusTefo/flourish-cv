@@ -21,4 +21,46 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Browser compatibility targets
+    target: ['es2015', 'chrome79', 'firefox67', 'safari12', 'edge79'],
+    // CSS compatibility
+    cssTarget: ['chrome79', 'firefox67', 'safari12', 'edge79'],
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for large libraries
+          'pdf-libs': ['jspdf', 'html2canvas'],
+          'ui-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-navigation-menu'
+          ],
+          'ui-components': [
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-label',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-switch'
+          ],
+          'charts': ['recharts'],
+          'markdown': ['react-markdown'],
+          'router': ['react-router-dom'],
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'supabase': ['@supabase/supabase-js'],
+          'query': ['@tanstack/react-query'],
+          'utils': ['date-fns', 'clsx', 'tailwind-merge', 'class-variance-authority']
+        }
+      }
+    },
+    // Increase chunk size warning limit to 1000kb since we're optimizing
+    chunkSizeWarningLimit: 1000,
+    // Enable source maps for better debugging in production
+    sourcemap: mode === 'development'
+  }
 }));

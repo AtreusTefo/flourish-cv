@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, AlertCircle } from "lucide-react";
+import { FileText, AlertCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -114,7 +114,7 @@ const Auth = () => {
         }
         toast.success("Account created! Please check your email to verify your account.");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErrors({ 
         general: "An unexpected error occurred. Please try again." 
       });
@@ -195,7 +195,14 @@ const Auth = () => {
               )}
             </div>
             <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isLogin ? "Signing In..." : "Creating Account..."}
+                </>
+              ) : (
+                isLogin ? "Sign In" : "Sign Up"
+              )}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

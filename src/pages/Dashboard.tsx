@@ -7,8 +7,10 @@ import { FileText, Plus, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 import Navigation from "@/components/Navigation";
 import SEOHead from "@/components/SEOHead";
+import { ResumeCardSkeleton } from "@/components/ui/skeleton-loaders";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -21,14 +23,14 @@ const Dashboard = () => {
     } else if (user) {
       fetchResumes();
     }
-  }, [user, authLoading, navigate]); // Removed fetchResumes from dependencies
+  }, [user, authLoading, navigate, fetchResumes]);
 
   const handleDeleteResume = async (id: string) => {
     try {
       await deleteResume(id);
       toast.success("Resume deleted successfully");
     } catch (error) {
-      console.error("Error deleting resume:", error);
+      logger.error("Error deleting resume", error, { component: 'Dashboard', action: 'deleteResume', resumeId: id });
       toast.error("Failed to delete resume");
     }
   };
@@ -38,7 +40,7 @@ const Dashboard = () => {
       const date = new Date(dateString);
       // Check if the date is valid
       if (isNaN(date.getTime())) {
-        console.warn(`Invalid date string provided: ${dateString}`);
+        logger.warn(`Invalid date string provided: ${dateString}`, { component: 'Dashboard', action: 'formatDate' });
         return 'Invalid Date';
       }
       return date.toLocaleDateString('en-US', {
@@ -47,7 +49,7 @@ const Dashboard = () => {
         day: 'numeric',
       });
     } catch (error) {
-      console.error('Error formatting date:', error);
+      logger.error('Error formatting date', error, { component: 'Dashboard', action: 'formatDate', dateString });
       return 'Invalid Date';
     }
   };
@@ -96,9 +98,10 @@ const Dashboard = () => {
 
         {/* Resumes Grid */}
         {resumesLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading resumes...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <ResumeCardSkeleton key={i} />
+            ))}
           </div>
         ) : resumes.length === 0 ? (
           <Card className="text-center py-12">

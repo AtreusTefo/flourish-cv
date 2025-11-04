@@ -10,7 +10,7 @@ const AcademicTemplate = ({ data, className = "", primaryColor = "#7C2D12", seco
           <GraduationCap className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" style={{ color: primaryColor }} />
         </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3" style={{ color: primaryColor }}>
-          {data.personalInfo.name}
+          {data.personalInfo.fullName}
         </h1>
         <p className="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4 italic">{data.personalInfo.jobTitle}</p>
         

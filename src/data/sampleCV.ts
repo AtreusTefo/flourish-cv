@@ -1,8 +1,9 @@
 import { CVData } from "@/types/cv";
 
 export const sampleCVData: CVData = {
+  template: "modern",
   personalInfo: {
-    name: "Sarah Johnson",
+    fullName: "Sarah Johnson",
     jobTitle: "Senior Software Engineer",
     email: "sarah.johnson@email.com",
     phone: "+1 (555) 123-4567",

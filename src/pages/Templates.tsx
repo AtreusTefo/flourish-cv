@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Check, Download, Palette, Loader2 } from "lucide-react";
+import { Check, Download, Palette, Loader2, AlertTriangle, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Navigation from "@/components/Navigation";
 import SEOHead from "@/components/SEOHead";
 import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
@@ -18,7 +18,9 @@ import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
 import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
 import { sampleCVData } from "@/data/sampleCV";
 import { exportToPDF } from "@/utils/pdfExportImproved";
+import { validateCVColors } from "@/utils/colorContrast";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 
 const Templates = () => {
   const navigate = useNavigate();
@@ -27,6 +29,11 @@ const Templates = () => {
   const [primaryColor, setPrimaryColor] = useState("#3B82F6");
   const [secondaryColor, setSecondaryColor] = useState("#1E40AF");
   const [showExportSuccess, setShowExportSuccess] = useState(false);
+
+  // Color contrast validation
+  const colorValidation = useMemo(() => {
+    return validateCVColors(primaryColor, secondaryColor);
+  }, [primaryColor, secondaryColor]);
 
 
   const templates = [
@@ -107,9 +114,9 @@ const Templates = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExportPDF = async () => {
-    console.log('🚀 Templates: Export PDF button clicked');
-    console.log('📋 Current previewTemplate:', previewTemplate);
-    console.log('📋 Available templates:', templates.map(t => t.id));
+    logger.debug('Templates: Export PDF button clicked', { component: 'Templates', action: 'exportPDF' });
+    logger.debug('Current previewTemplate', { component: 'Templates', previewTemplate });
+    logger.debug('Available templates', { component: 'Templates', availableTemplates: templates.map(t => t.id).join(', ') });
     
     if (!previewTemplate) {
       toast.error("Please preview a template first before downloading PDF.");
@@ -121,13 +128,27 @@ const Templates = () => {
       
       const elementId = `cv-template-${previewTemplate}`;
       
+      // Content validation before export
+      const element = document.getElementById(elementId);
+      if (!element) {
+        toast.error("Template content not found. Please refresh and try again.");
+        return;
+      }
+      
+      // Check if element has meaningful content
+      const textContent = element.textContent?.trim();
+      if (!textContent || textContent.length < 50) {
+        toast.error("Template appears to be empty or incomplete. Please ensure the template has loaded properly.");
+        return;
+      }
+      
       // Use improved PDF export with comprehensive error handling
       const { ImprovedPDFExporter } = await import('../utils/pdfExportImproved');
       
       const result = await ImprovedPDFExporter.exportToPDF(elementId, {
         fileName: `resume-${previewTemplate}.pdf`,
         timeout: 30000,
-        scale: 2, // Use optimized scale
+        scale: 3, // Increased scale for better quality
         quality: 0.95,
         maxPages: 10
       });
@@ -269,6 +290,7 @@ const Templates = () => {
                           value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
                           className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
+                          aria-label="Primary color picker"
                         />
                         <div className="flex-1">
                           <input
@@ -277,6 +299,7 @@ const Templates = () => {
                             onChange={(e) => setPrimaryColor(e.target.value)}
                             className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
                             placeholder="#3B82F6"
+                            aria-label="Primary color hex value"
                           />
                         </div>
                       </div>
@@ -291,6 +314,7 @@ const Templates = () => {
                           value={secondaryColor}
                           onChange={(e) => setSecondaryColor(e.target.value)}
                           className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
+                          aria-label="Secondary color picker"
                         />
                         <div className="flex-1">
                           <input
@@ -299,9 +323,29 @@ const Templates = () => {
                             onChange={(e) => setSecondaryColor(e.target.value)}
                             className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
                             placeholder="#1E40AF"
+                            aria-label="Secondary color hex value"
                           />
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Color Contrast Indicator */}
+                    <div className="pt-3 sm:pt-4 border-t">
+                      <div className="flex items-center gap-2 mb-2">
+                        {colorValidation.overall === 'FAIL' ? (
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                        <span className="text-xs sm:text-sm font-medium">
+                          Accessibility: {colorValidation.overall === 'FAIL' ? 'Needs Improvement' : `WCAG ${colorValidation.overall}`}
+                        </span>
+                      </div>
+                      {colorValidation.recommendations.length > 0 && (
+                        <div className="text-xs text-muted-foreground">
+                          {colorValidation.recommendations[0]}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="pt-3 sm:pt-4 border-t">
@@ -400,6 +444,16 @@ const Templates = () => {
                       selectedTemplate === template.id ? "ring-2 ring-primary shadow-lg" : ""
                     }`}
                     onClick={() => setSelectedTemplate(template.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${template.name} template`}
+                    aria-pressed={selectedTemplate === template.id}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedTemplate(template.id);
+                      }
+                    }}
                   >
                     <div className="aspect-[8.5/11] bg-cv-bg-gray p-2 relative overflow-hidden">
                       <div className="scale-[0.25] origin-top-left w-[400%] pointer-events-none">

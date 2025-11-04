@@ -7,7 +7,7 @@ const SimpleElegantTemplate = ({ data, className = "", primaryColor = "#374151",
       {/* Minimal Header */}
       <div className="mb-10">
         <h1 className="text-5xl font-light mb-3 tracking-tight" style={{ color: primaryColor }}>
-          {data.personalInfo.name}
+          {data.personalInfo.fullName}
         </h1>
         <p className="text-xl text-gray-600 font-light mb-6">{data.personalInfo.jobTitle}</p>
         

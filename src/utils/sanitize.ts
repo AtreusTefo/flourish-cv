@@ -2,6 +2,8 @@
  * Utility functions for input sanitization and validation
  */
 
+import { CVData } from '@/types/cv';
+
 /**
  * Sanitizes HTML content by removing potentially dangerous elements and attributes
  */
@@ -58,8 +60,8 @@ export const validateEmail = (email: string): boolean => {
  */
 export const validatePhone = (phone: string): boolean => {
   if (!phone) return true; // Phone is optional
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-  return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+  return phoneRegex.test(phone.replace(/[\s\-()]/g, ''));
 };
 
 /**
@@ -78,7 +80,7 @@ export const validateUrl = (url: string): boolean => {
 /**
  * Sanitizes and validates CV form data
  */
-export const sanitizeCVData = (data: any): any => {
+export const sanitizeCVData = (data: CVData): CVData => {
   if (!data || typeof data !== 'object') return data;
   
   const sanitized = { ...data };
@@ -99,9 +101,9 @@ export const sanitizeCVData = (data: any): any => {
   
   // Sanitize experience entries
   if (Array.isArray(sanitized.experience)) {
-    sanitized.experience = sanitized.experience.map((exp: any) => ({
+    sanitized.experience = sanitized.experience.map((exp) => ({
       ...exp,
-      title: sanitizeText(exp.title || ''),
+      position: sanitizeText(exp.position || ''),
       company: sanitizeText(exp.company || ''),
       location: sanitizeText(exp.location || ''),
       description: sanitizeHtml(exp.description || ''),
@@ -110,7 +112,7 @@ export const sanitizeCVData = (data: any): any => {
   
   // Sanitize education entries
   if (Array.isArray(sanitized.education)) {
-    sanitized.education = sanitized.education.map((edu: any) => ({
+    sanitized.education = sanitized.education.map((edu) => ({
       ...edu,
       degree: sanitizeText(edu.degree || ''),
       institution: sanitizeText(edu.institution || ''),
@@ -129,7 +131,7 @@ export const sanitizeCVData = (data: any): any => {
 /**
  * Validates required fields in CV data
  */
-export const validateCVData = (data: any): { isValid: boolean; errors: string[] } => {
+export const validateCVData = (data: CVData): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
   if (!data) {

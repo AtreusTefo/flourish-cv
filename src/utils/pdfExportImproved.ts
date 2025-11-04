@@ -21,7 +21,7 @@ interface PDFExportResult {
 export class ImprovedPDFExporter {
   private static readonly DEFAULT_OPTIONS: Required<PDFExportOptions> = {
     fileName: 'resume.pdf',
-    scale: 2, // Reduced scale for better performance
+    scale: 3, // Increased scale for better quality
     maxPages: 10,
     pageBreakSelector: '.page-break, .cv-section',
     quality: 0.95,

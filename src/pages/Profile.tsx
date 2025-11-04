@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, User, Save, ArrowLeft } from "lucide-react";
+import { FileText, User, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { ProfileFormSkeleton } from "@/components/ui/skeleton-loaders";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -58,7 +60,7 @@ const Profile = () => {
         toast.success("Profile created successfully!");
       }
     } catch (error) {
-      console.error("Error saving profile:", error);
+      logger.error("Error saving profile", error, { component: 'Profile', action: 'handleSave', userId: user?.id });
       toast.error("Failed to save profile");
     } finally {
       setSaving(false);
@@ -119,62 +121,78 @@ const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="full_name">Full Name</Label>
-                  <Input
-                    id="full_name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.full_name}
-                    onChange={(e) => handleInputChange("full_name", e.target.value)}
-                    required
-                  />
-                </div>
+              {loading ? (
+                <ProfileFormSkeleton />
+              ) : (
+                <>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="full_name">Full Name</Label>
+                      <Input
+                        id="full_name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={formData.full_name}
+                        onChange={(e) => handleInputChange("full_name", e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    required
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    This email is used for account notifications and login.
-                  </p>
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        required
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        This email is used for account notifications and login.
+                      </p>
+                    </div>
 
-                <div className="flex gap-3 pt-4">
-                  <Button 
-                    type="submit" 
-                    className="flex-1 bg-gradient-primary" 
-                    disabled={saving}
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => navigate("/builder")}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+                    <div className="flex gap-3 pt-4">
+                      <Button 
+                        type="submit" 
+                        className="flex-1 bg-gradient-primary" 
+                        disabled={saving}
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Changes
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => navigate("/builder")}
+                        className="flex-1"
+                        disabled={saving}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
 
-              {profile && (
-                <div className="mt-6 pt-6 border-t">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Account Information</h3>
-                  <div className="text-sm space-y-1">
-                    <p><strong>Account Created:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
-                    <p><strong>Last Updated:</strong> {new Date(profile.updated_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
+                  {profile && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Account Information</h3>
+                      <div className="text-sm space-y-1">
+                        <p><strong>Account Created:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
+                        <p><strong>Last Updated:</strong> {new Date(profile.updated_at).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>

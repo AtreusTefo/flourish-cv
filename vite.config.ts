@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Keep React and React-DOM together in the vendor chunk
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor-react';
@@ -39,26 +38,8 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('@radix-ui')) {
               return 'ui-radix';
             }
-            if (id.includes('recharts')) {
-              return 'charts';
-            }
-            if (id.includes('react-markdown')) {
-              return 'markdown';
-            }
-            if (id.includes('react-router-dom')) {
-              return 'router';
-            }
-            if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
-              return 'forms';
-            }
-            if (id.includes('@supabase')) {
-              return 'supabase';
-            }
-            if (id.includes('@tanstack/react-query')) {
-              return 'query';
-            }
-            // Other node_modules go to vendor
-            return 'vendor';
+            // Supabase and its transitive deps (tslib, etc.) stay in vendor
+            // to avoid circular chunk dependencies that cause TDZ errors
           }
         }
       }

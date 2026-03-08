@@ -167,3 +167,33 @@ All browser errors related to font loading and style injection have been success
 - **Better user experience** with stable rendering
 
 The fixes are production-ready and follow web performance best practices.
+
+---
+
+## 🚨 Production Deployment Updates (March 8, 2026)
+
+### 5. CSP Blocking Inline Scripts and eval()
+**Error:** `Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script`
+**Impact:** Blank page in production — no JavaScript executed at all
+
+**Root Cause:**
+- The inline `<script>` block (CSS-in-JS style target + font-display manipulation from fix #3 and #4 above) triggered CSP inline script violations
+- The vendor bundle's `Function("return this")()` globalThis polyfill requires `unsafe-eval`
+- A deprecated `X-XSS-Protection: 1; mode=block` header was set but no explicit CSP policy existed
+
+**Solution:**
+- **Removed inline scripts** from `index.html` (the style-target div and font-display script were no longer needed)
+- **Added explicit CSP header** in `netlify.toml` with `unsafe-inline` and `unsafe-eval` (required by vendor polyfill)
+- **Removed deprecated** `X-XSS-Protection` header
+
+**Note:** Fixes #3 and #4 above (CSS-in-JS style target and font-display script) were **superseded** by this change. The inline scripts they added were themselves causing CSP violations in production. The style injection and font handling now work without any inline scripts.
+
+### 6. Circular Chunk Dependency Causing TDZ ReferenceError
+**Error:** `Uncaught ReferenceError: Cannot access 'ae' before initialization` in `supabase-BOyXWPO-.js`
+**Impact:** Complete application crash — blank page
+
+**Root Cause:** Aggressive `manualChunks` in `vite.config.ts` split `@supabase` into its own chunk, but `tslib` (a shared dependency) was placed in the `vendor` chunk. Both chunks imported from each other (circular dependency), causing a Temporal Dead Zone error at runtime.
+
+**Solution:** Removed overly granular chunk splitting. Only self-contained packages (`react`, `jspdf`, `@radix-ui`) are manually chunked. All other packages use Vite's default chunking which correctly handles shared dependencies.
+
+See `FIXES_IMPLEMENTATION_SUMMARY.md` sections 9 and 10 for full technical details.

@@ -116,41 +116,6 @@
 
   <body>
     <div id="root"></div>
-    <!-- Style target for CSS-in-JS libraries -->
-    <div id="style-target" style="display: none;"></div>
-    
-    <!-- Ensure style target availability -->
-    <script>
-      // Ensure style target is available for CSS-in-JS libraries
-      (function() {
-        if (!document.head.querySelector('#css-in-js-target')) {
-          const styleTarget = document.createElement('style');
-          styleTarget.id = 'css-in-js-target';
-          styleTarget.type = 'text/css';
-          document.head.appendChild(styleTarget);
-        }
-        
-        // Prevent font loading errors from blocking rendering
-        document.addEventListener('DOMContentLoaded', function() {
-          // Add font-display: swap to all font-face rules
-          const sheets = document.styleSheets;
-          for (let i = 0; i < sheets.length; i++) {
-            try {
-              const rules = sheets[i].cssRules || sheets[i].rules;
-              for (let j = 0; j < rules.length; j++) {
-                if (rules[j].type === CSSRule.FONT_FACE_RULE) {
-                  if (!rules[j].style.fontDisplay) {
-                    rules[j].style.fontDisplay = 'swap';
-                  }
-                }
-              }
-            } catch (e) {
-              // Ignore cross-origin stylesheet errors
-            }
-          }
-        });
-      })();
-    </script>
     
     <script type="module" src="/src/main.tsx"></script>
   </body>

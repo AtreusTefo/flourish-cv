@@ -2,8 +2,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Strip surrounding quotes that some CI environments (e.g. Netlify env-file import) leave in values
+const stripQuotes = (val: string | undefined) =>
+  val ? val.replace(/^"|"$/g, '').replace(/^'|'$/g, '') : val;
+
+const SUPABASE_URL = stripQuotes(import.meta.env.VITE_SUPABASE_URL);
+const SUPABASE_PUBLISHABLE_KEY = stripQuotes(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.error(

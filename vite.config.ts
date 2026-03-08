@@ -14,21 +14,7 @@ export default defineConfig(({ mode }) => ({
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   },
-  plugins: [
-    react(),
-    // lovable-tagger: dev-only, loaded dynamically to avoid ESM/CJS issues in CI
-    ...(mode === "development"
-      ? (() => {
-          try {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const { componentTagger } = require("lovable-tagger");
-            return [componentTagger()];
-          } catch {
-            return [];
-          }
-        })()
-      : []),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

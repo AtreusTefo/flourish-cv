@@ -2,28 +2,33 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
-// lovable-tagger is optional – only used in dev and may not be installed in CI
-let componentTagger: (() => unknown) | null = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  componentTagger = require("lovable-tagger").componentTagger;
-} catch {
-  // not available – safe to ignore in production builds
-}
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "0.0.0.0", // Changed from "::" to "0.0.0.0" for better proxy compatibility
-    port: 8080, // Fixed: Changed from 8081 to 8080 as per requirements
-    cors: true, // Enable CORS for external testing tools
+    host: "0.0.0.0",
+    port: 8080,
+    cors: true,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    // lovable-tagger: dev-only, loaded dynamically to avoid ESM/CJS issues in CI
+    ...(mode === "development"
+      ? (() => {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { componentTagger } = require("lovable-tagger");
+            return [componentTagger()];
+          } catch {
+            return [];
+          }
+        })()
+      : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -17,7 +17,6 @@ import AcademicTemplate from "@/components/cv/templates/AcademicTemplate";
 import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
 import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
 import { sampleCVData } from "@/data/sampleCV";
-import { exportToPDF } from "@/utils/pdfExportImproved";
 import { validateCVColors } from "@/utils/colorContrast";
 import { toast } from "sonner";
 import { logger } from "@/utils/logger";
@@ -28,7 +27,11 @@ const Templates = () => {
   const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
   const [primaryColor, setPrimaryColor] = useState("#3B82F6");
   const [secondaryColor, setSecondaryColor] = useState("#1E40AF");
+  const [primaryColorError, setPrimaryColorError] = useState(false);
+  const [secondaryColorError, setSecondaryColorError] = useState(false);
   const [showExportSuccess, setShowExportSuccess] = useState(false);
+
+  const HEX_RE = /^#[0-9a-fA-F]{6}$/
 
   // Color contrast validation
   const colorValidation = useMemo(() => {
@@ -296,11 +299,19 @@ const Templates = () => {
                           <input
                             type="text"
                             value={primaryColor}
-                            onChange={(e) => setPrimaryColor(e.target.value)}
-                            className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
+                            onChange={(e) => {
+                              setPrimaryColor(e.target.value);
+                              setPrimaryColorError(!HEX_RE.test(e.target.value));
+                            }}
+                            className={`w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm ${primaryColorError ? "border-red-500 focus:ring-red-500" : ""}`}
                             placeholder="#3B82F6"
                             aria-label="Primary color hex value"
+                            aria-invalid={primaryColorError}
+                            aria-describedby={primaryColorError ? "primary-color-error" : undefined}
                           />
+                          {primaryColorError && (
+                            <p id="primary-color-error" className="text-xs text-red-500 mt-1">Enter a valid hex color (e.g. #3B82F6)</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -320,11 +331,19 @@ const Templates = () => {
                           <input
                             type="text"
                             value={secondaryColor}
-                            onChange={(e) => setSecondaryColor(e.target.value)}
-                            className="w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm"
+                            onChange={(e) => {
+                              setSecondaryColor(e.target.value);
+                              setSecondaryColorError(!HEX_RE.test(e.target.value));
+                            }}
+                            className={`w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm ${secondaryColorError ? "border-red-500 focus:ring-red-500" : ""}`}
                             placeholder="#1E40AF"
                             aria-label="Secondary color hex value"
+                            aria-invalid={secondaryColorError}
+                            aria-describedby={secondaryColorError ? "secondary-color-error" : undefined}
                           />
+                          {secondaryColorError && (
+                            <p id="secondary-color-error" className="text-xs text-red-500 mt-1">Enter a valid hex color (e.g. #1E40AF)</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -354,74 +373,98 @@ const Templates = () => {
                         <button
                           onClick={() => {
                             setPrimaryColor("#3B82F6");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#1E40AF");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #3B82F6 50%, #1E40AF 50%)" }}
                           title="Blue"
+                          aria-label="Set Blue color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#10B981");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#059669");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #10B981 50%, #059669 50%)" }}
                           title="Green"
+                          aria-label="Set Green color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#8B5CF6");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#6D28D9");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #8B5CF6 50%, #6D28D9 50%)" }}
                           title="Purple"
+                          aria-label="Set Purple color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#EF4444");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#DC2626");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #EF4444 50%, #DC2626 50%)" }}
                           title="Red"
+                          aria-label="Set Red color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#F59E0B");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#D97706");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #F59E0B 50%, #D97706 50%)" }}
                           title="Orange"
+                          aria-label="Set Orange color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#06B6D4");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#0891B2");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #06B6D4 50%, #0891B2 50%)" }}
                           title="Cyan"
+                          aria-label="Set Cyan color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#EC4899");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#DB2777");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #EC4899 50%, #DB2777 50%)" }}
                           title="Pink"
+                          aria-label="Set Pink color preset"
                         />
                         <button
                           onClick={() => {
                             setPrimaryColor("#1F2937");
+                            setPrimaryColorError(false);
                             setSecondaryColor("#111827");
+                            setSecondaryColorError(false);
                           }}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #1F2937 50%, #111827 50%)" }}
                           title="Dark"
+                          aria-label="Set Dark color preset"
                         />
                       </div>
                     </div>
@@ -488,6 +531,7 @@ const Templates = () => {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
+                            setSelectedTemplate(template.id);
                             setPreviewTemplate(template.id);
                           }}
                         >
@@ -502,8 +546,7 @@ const Templates = () => {
                           data-testid={`use-template-${template.id}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedTemplate(template.id);
-                            handleUseTemplate();
+                            navigate(`/builder?template=${template.id}`);
                           }}
                         >
                           <span className="hidden sm:inline">{selectedTemplate === template.id ? "Use Template" : "Select"}</span>
@@ -526,8 +569,12 @@ const Templates = () => {
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Select your favorite template and start creating your professional resume in minutes.
           </p>
-          <Button size="lg" className="bg-gradient-primary shadow-lg" onClick={handleUseTemplate}>
-            Start Building with {templates.find((t) => t.id === selectedTemplate)?.name}
+          <Button
+            size="lg"
+            className="bg-gradient-primary shadow-lg"
+            onClick={() => navigate(`/builder?template=${previewTemplate ?? selectedTemplate}`)}
+          >
+            Start Building with {templates.find((t) => t.id === (previewTemplate ?? selectedTemplate))?.name}
           </Button>
         </div>
       </section>

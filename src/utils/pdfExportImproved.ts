@@ -65,20 +65,25 @@ export class ImprovedPDFExporter {
     // Step 1: Find and validate the element
     const element = await this.findAndValidateElement(elementId);
     
-    // Step 2: Prepare element for capture
-    await this.prepareElementForCapture(element);
+    // Step 2: Prepare element for capture; receive a restore callback
+    const restoreStyles = await this.prepareElementForCapture(element);
     
-    // Step 3: Wait for all resources to load
-    await this.waitForResources(element);
-    
-    // Step 4: Determine if multi-page export is needed
-    const needsMultiPage = await this.checkIfMultiPageNeeded(element);
-    
-    // Step 5: Export based on content size
-    if (needsMultiPage) {
-      return await this.exportMultiPage(element, config);
-    } else {
-      return await this.exportSinglePage(element, config);
+    try {
+      // Step 3: Wait for all resources to load
+      await this.waitForResources(element);
+      
+      // Step 4: Determine if multi-page export is needed
+      const needsMultiPage = await this.checkIfMultiPageNeeded(element);
+      
+      // Step 5: Export based on content size
+      if (needsMultiPage) {
+        return await this.exportMultiPage(element, config);
+      } else {
+        return await this.exportSinglePage(element, config);
+      }
+    } finally {
+      // Always restore original styles after capture, success or failure
+      restoreStyles();
     }
   }
 
@@ -115,22 +120,21 @@ export class ImprovedPDFExporter {
     return element;
   }
 
-  private static async prepareElementForCapture(element: HTMLElement): Promise<void> {
-    // Ensure element is visible and properly styled
+  private static async prepareElementForCapture(element: HTMLElement): Promise<() => void> {
+    // Snapshot current inline styles so we can restore them after capture
     const originalStyle = element.style.cssText;
     
-    // Apply styles to ensure proper rendering
+    // Apply minimal styles needed to ensure proper rendering
     element.style.position = 'relative';
-    element.style.zIndex = '1000';
     element.style.backgroundColor = element.style.backgroundColor || '#ffffff';
     
     // Wait for layout to stabilize
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    // Restore original styles after a brief delay
-    setTimeout(() => {
+    // Return a restore callback — caller must invoke this after capture completes
+    return () => {
       element.style.cssText = originalStyle;
-    }, 500);
+    };
   }
 
   private static async waitForResources(element: HTMLElement): Promise<void> {
@@ -139,7 +143,7 @@ export class ImprovedPDFExporter {
     const imagePromises = Array.from(images).map(img => {
       if (img.complete) return Promise.resolve();
       
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         img.onload = resolve;
         img.onerror = resolve; // Continue even if image fails to load
         setTimeout(resolve, 2000); // Timeout after 2 seconds

@@ -3,6 +3,28 @@
  * Based on WCAG 2.1 guidelines
  */
 
+type AccessibilityLevel = 'AAA' | 'AA' | 'FAIL';
+
+interface ContrastResult {
+  ratio: number;
+  level: AccessibilityLevel;
+  levelLarge: AccessibilityLevel;
+}
+
+interface ValidationResults {
+  primaryOnWhite: ContrastResult;
+  primaryOnLight: ContrastResult;
+  whiteOnPrimary: ContrastResult;
+  secondaryOnWhite: ContrastResult;
+  whiteOnSecondary: ContrastResult;
+}
+
+export interface CVColorValidation {
+  results: ValidationResults;
+  overall: AccessibilityLevel;
+  recommendations: string[];
+}
+
 /**
  * Convert hex color to RGB values
  */
@@ -84,11 +106,9 @@ export function getAccessibilityLevel(
 /**
  * Validate CV template colors for accessibility
  */
-export function validateCVColors(primaryColor: string, secondaryColor: string) {
+export function validateCVColors(primaryColor: string, secondaryColor: string): CVColorValidation {
   const white = '#FFFFFF';
-  const black = '#000000';
   const lightGray = '#F8F9FA';
-  const darkGray = '#343A40';
   
   const results = {
     primaryOnWhite: {
@@ -125,18 +145,14 @@ export function validateCVColors(primaryColor: string, secondaryColor: string) {
   return {
     results,
     overall: hasFailures ? 'FAIL' : allAAA ? 'AAA' : 'AA',
-    recommendations: generateRecommendations(results, primaryColor, secondaryColor)
+    recommendations: generateRecommendations(results)
   };
 }
 
 /**
  * Generate accessibility recommendations based on color validation results
  */
-function generateRecommendations(
-  results: any, 
-  primaryColor: string, 
-  secondaryColor: string
-): string[] {
+function generateRecommendations(results: ValidationResults): string[] {
   const recommendations: string[] = [];
   
   if (results.primaryOnWhite.level === 'FAIL') {
@@ -172,7 +188,8 @@ export function suggestAccessibleColors(baseColor: string): string[] {
   const suggestions: string[] = [];
   
   // Generate darker variants for better contrast
-  for (let factor = 0.7; factor >= 0.3; factor -= 0.1) {
+  for (let i = 7; i >= 3; i--) {
+    const factor = i / 10;
     const darkerR = Math.round(rgb.r * factor);
     const darkerG = Math.round(rgb.g * factor);
     const darkerB = Math.round(rgb.b * factor);

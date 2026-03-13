@@ -2,7 +2,7 @@
 
 A modern, accessible, and user-friendly CV/Resume builder application built with React, TypeScript, and Tailwind CSS.
 
-## 🌟 Features
+## Features
 
 - **Professional Templates**: Multiple CV templates including Modern Blue, Executive Formal, Academic, Creative Edge, and more
 - **Real-time Preview**: See your changes instantly as you type
@@ -13,7 +13,7 @@ A modern, accessible, and user-friendly CV/Resume builder application built with
 - **Color Contrast Validation**: Built-in color accessibility checker
 - **Auto-save**: Never lose your work with automatic saving
 
-## ♿ Accessibility Features
+## Accessibility Features
 
 This application is built with accessibility as a core principle:
 
@@ -26,7 +26,7 @@ This application is built with accessibility as a core principle:
 - **High Contrast Mode**: Support for system high contrast settings
 - **Reduced Motion**: Respects user preferences for reduced animations
 
-## 🌐 Browser Compatibility
+## Browser Compatibility
 
 **Supported Browsers:**
 - Chrome 79+ (Recommended)

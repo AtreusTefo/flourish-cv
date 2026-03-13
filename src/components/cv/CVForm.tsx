@@ -154,6 +154,90 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
     });
   };
 
+  const addProject = () => {
+    setCVData({
+      ...cvData,
+      projects: [
+        ...(cvData.projects || []),
+        {
+          id: Date.now().toString(),
+          name: "",
+          description: "",
+          url: "",
+        },
+      ],
+    });
+  };
+
+  const updateProject = (id: string, field: string, value: string) => {
+    const sanitizedValue = field === 'description' ? sanitizeHtml(value) : sanitizeText(value);
+    setCVData({
+      ...cvData,
+      projects: (cvData.projects || []).map((proj) =>
+        proj.id === id ? { ...proj, [field]: sanitizedValue } : proj
+      ),
+    });
+  };
+
+  const removeProject = (id: string) => {
+    setCVData({
+      ...cvData,
+      projects: (cvData.projects || []).filter((proj) => proj.id !== id),
+    });
+  };
+
+  const addLanguage = () => {
+    setCVData({
+      ...cvData,
+      languages: [
+        ...(cvData.languages || []),
+        {
+          id: Date.now().toString(),
+          language: "",
+          proficiency: "",
+        },
+      ],
+    });
+  };
+
+  const updateLanguage = (id: string, field: string, value: string) => {
+    const sanitizedValue = sanitizeText(value);
+    setCVData({
+      ...cvData,
+      languages: (cvData.languages || []).map((lang) =>
+        lang.id === id ? { ...lang, [field]: sanitizedValue } : lang
+      ),
+    });
+  };
+
+  const removeLanguage = (id: string) => {
+    setCVData({
+      ...cvData,
+      languages: (cvData.languages || []).filter((lang) => lang.id !== id),
+    });
+  };
+
+  const addInterest = () => {
+    setCVData({
+      ...cvData,
+      interests: [...(cvData.interests || []), ""],
+    });
+  };
+
+  const updateInterest = (index: number, value: string) => {
+    const sanitizedValue = sanitizeText(value);
+    const updated = [...(cvData.interests || [])];
+    updated[index] = sanitizedValue;
+    setCVData({ ...cvData, interests: updated });
+  };
+
+  const removeInterest = (index: number) => {
+    setCVData({
+      ...cvData,
+      interests: (cvData.interests || []).filter((_, i) => i !== index),
+    });
+  };
+
   const addSkill = () => {
     const newSkill = "";
     setCVData({
@@ -189,12 +273,15 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 h-auto" role="tablist" aria-label="Resume sections">
+        <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 h-auto" role="tablist" aria-label="Resume sections">
           <TabsTrigger value="personal" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="personal-panel">Personal</TabsTrigger>
           <TabsTrigger value="summary" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="summary-panel">Summary</TabsTrigger>
           <TabsTrigger value="experience" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="experience-panel">Experience</TabsTrigger>
           <TabsTrigger value="education" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="education-panel">Education</TabsTrigger>
           <TabsTrigger value="skills" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="skills-panel">Skills</TabsTrigger>
+          <TabsTrigger value="projects" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="projects-panel">Projects</TabsTrigger>
+          <TabsTrigger value="languages" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="languages-panel">Languages</TabsTrigger>
+          <TabsTrigger value="interests" className="text-xs sm:text-sm px-2 sm:px-3 py-2" role="tab" aria-controls="interests-panel">Interests</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="personal-panel" aria-labelledby="personal-tab">
@@ -218,6 +305,15 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 <span>{errors.fullName}</span>
               </div>
             )}
+          </div>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="jobTitle" className="text-sm">Job Title</Label>
+            <Input
+              id="jobTitle"
+              value={cvData.personalInfo.jobTitle}
+              onChange={(e) => updatePersonalInfo("jobTitle", e.target.value)}
+              placeholder="Software Engineer"
+            />
           </div>
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="email" className="text-sm">Email *</Label>
@@ -386,13 +482,14 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
-                <Label htmlFor="summary" className="text-xs sm:text-sm">Description</Label>
+                <Label htmlFor={`exp-description-${exp.id}`} className="text-xs sm:text-sm">Description</Label>
                 <Button variant="outline" size="sm" className="w-fit">
                   <Sparkles className="h-3 w-3 mr-1" />
                   <span className="text-xs">Suggest</span>
                 </Button>
               </div>
               <Textarea
+                id={`exp-description-${exp.id}`}
                 placeholder="Describe your responsibilities and achievements..."
                 value={exp.description}
                 onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
@@ -442,6 +539,13 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 />
                 <Input
                   type="date"
+                  placeholder="Start Date"
+                  value={edu.startDate}
+                  onChange={(e) => updateEducation(edu.id, "startDate", e.target.value)}
+                  className="text-sm"
+                />
+                <Input
+                  type="date"
                   placeholder="Graduation Date"
                   value={edu.endDate}
                   onChange={(e) => updateEducation(edu.id, "endDate", e.target.value)}
@@ -452,6 +556,14 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 placeholder="GPA (Optional)"
                 value={edu.gpa}
                 onChange={(e) => updateEducation(edu.id, "gpa", e.target.value)}
+                className="text-sm"
+              />
+              <Textarea
+                id={`edu-description-${edu.id}`}
+                placeholder="Describe your studies, achievements, or relevant coursework..."
+                value={edu.description}
+                onChange={(e) => updateEducation(edu.id, "description", e.target.value)}
+                rows={2}
                 className="text-sm"
               />
             </div>
@@ -471,32 +583,142 @@ const CVForm = ({ cvData, setCVData }: CVFormProps) => {
                 Add your technical and professional skills
               </p>
             </div>
+            {cvData.skills.map((skill, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <Input
+                  placeholder="e.g., JavaScript, Project Management, Adobe Photoshop"
+                  value={skill}
+                  onChange={(e) => updateSkill(index, e.target.value)}
+                  className="text-sm flex-1"
+                />
+                <Button
+                  onClick={() => removeSkill(index)}
+                  variant="outline"
+                  size="sm"
+                  className="px-2"
+                  aria-label={`Remove skill ${index + 1}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button onClick={addSkill} variant="outline" className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Skill
+            </Button>
           </fieldset>
-          
-          {cvData.skills.map((skill, index) => (
-            <div key={index} className="flex gap-2 items-center">
+        </TabsContent>
+
+        <TabsContent value="projects" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="projects-panel" aria-labelledby="projects-tab">
+          {(cvData.projects || []).map((proj, index) => (
+            <div key={proj.id} className="p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-3 relative">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-sm sm:text-base">Project {index + 1}</h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeProject(proj.id)}
+                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
               <Input
-                placeholder="e.g., JavaScript, Project Management, Adobe Photoshop"
-                value={skill}
-                onChange={(e) => updateSkill(index, e.target.value)}
-                className="text-sm flex-1"
+                placeholder="Project Name"
+                value={proj.name}
+                onChange={(e) => updateProject(proj.id, "name", e.target.value)}
+                className="text-sm"
               />
-              <Button
-                onClick={() => removeSkill(index)}
-                variant="outline"
-                size="sm"
-                className="px-2"
-                aria-label={`Remove skill ${index + 1}`}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <Input
+                placeholder="Project URL (Optional)"
+                value={proj.url || ""}
+                onChange={(e) => updateProject(proj.id, "url", e.target.value)}
+                className="text-sm"
+              />
+              <Textarea
+                placeholder="Describe the project, technologies used, and your contributions..."
+                value={proj.description}
+                onChange={(e) => updateProject(proj.id, "description", e.target.value)}
+                rows={3}
+                className="text-sm"
+              />
             </div>
           ))}
-          
-          <Button onClick={addSkill} variant="outline" className="w-full">
+          <Button onClick={addProject} variant="outline" className="w-full">
             <Plus className="h-4 w-4 mr-2" />
-            Add Skill
+            Add Project
           </Button>
+        </TabsContent>
+
+        <TabsContent value="languages" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="languages-panel" aria-labelledby="languages-tab">
+          {(cvData.languages || []).map((lang, index) => (
+            <div key={lang.id} className="p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-3 relative">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-sm sm:text-base">Language {index + 1}</h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeLanguage(lang.id)}
+                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <Input
+                  placeholder="e.g., Spanish"
+                  value={lang.language}
+                  onChange={(e) => updateLanguage(lang.id, "language", e.target.value)}
+                  className="text-sm"
+                />
+                <Input
+                  placeholder="e.g., Fluent, Intermediate"
+                  value={lang.proficiency}
+                  onChange={(e) => updateLanguage(lang.id, "proficiency", e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+            </div>
+          ))}
+          <Button onClick={addLanguage} variant="outline" className="w-full">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Language
+          </Button>
+        </TabsContent>
+
+        <TabsContent value="interests" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4" role="tabpanel" id="interests-panel" aria-labelledby="interests-tab">
+          <fieldset>
+            <legend className="sr-only">Interests</legend>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-sm font-medium">Interests</Label>
+              <p className="text-xs text-muted-foreground">
+                Add your hobbies and personal interests
+              </p>
+            </div>
+            {(cvData.interests || []).map((interest, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <Input
+                  placeholder="e.g., Open Source, Rock Climbing, Photography"
+                  value={interest}
+                  onChange={(e) => updateInterest(index, e.target.value)}
+                  className="text-sm flex-1"
+                />
+                <Button
+                  onClick={() => removeInterest(index)}
+                  variant="outline"
+                  size="sm"
+                  className="px-2"
+                  aria-label={`Remove interest ${index + 1}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button onClick={addInterest} variant="outline" className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Interest
+            </Button>
+          </fieldset>
         </TabsContent>
       </Tabs>
     </div>

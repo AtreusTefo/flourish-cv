@@ -449,60 +449,34 @@ getLCP(sendToAnalytics);
 getTTFB(sendToAnalytics);
 ```
 
-## 🔄 Contributing Guidelines
+## 🔄 2026 Update: Public-Only Mode (No Auth, No Profile)
 
-### Code Review Checklist
+- **Authentication, login, and signup have been removed.**
+- **Profile/account creation is not available.**
+- The Dashboard is now public and accessible to all users (no login required).
+- Navigation always shows "Dashboard" and "Build Resume" links for all users.
+- All routes are public; there are no protected routes or user sessions.
+- Remove any references to `/auth`, `/profile`, or user account features from your code and documentation.
 
-**Accessibility:**
-- [ ] ARIA labels are present and descriptive
-- [ ] Keyboard navigation works
-- [ ] Focus management is proper
-- [ ] Color contrast is sufficient
-- [ ] Screen reader testing completed
+### Example Navigation (2026+)
 
-**Browser Compatibility:**
-- [ ] Tested in supported browsers
-- [ ] Polyfills added if needed
-- [ ] Graceful degradation implemented
-- [ ] Mobile responsive
-
-**Performance:**
-- [ ] Bundle size impact assessed
-- [ ] Lazy loading implemented where appropriate
-- [ ] Images optimized
-- [ ] No memory leaks
-
-### Git Workflow
-
-```bash
-# Feature branch naming
-git checkout -b feature/accessibility-improvement
-git checkout -b fix/browser-compatibility-issue
-git checkout -b docs/update-accessibility-guide
-
-# Commit message format
-feat(a11y): add skip links to main navigation
-fix(compat): add polyfill for Array.includes in IE11
-docs(a11y): update screen reader testing guide
+```
+<Navigation />
+// ...existing code...
+// Desktop and mobile nav always show:
+// - Dashboard (outline button)
+// - Build Resume (primary CTA)
+// No login/signup/profile/account links
 ```
 
-## 📚 Resources
+### Example Dashboard (2026+)
 
-### Documentation
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
-- [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
+```
+const Dashboard = () => {
+  const { resumes, loading: resumesLoading, deleteResume, fetchResumes } = useResumes();
+  // ...existing code...
+  // No user/auth checks, no redirects
+};
+```
 
-### Tools
-- [axe DevTools](https://www.deque.com/axe/devtools/)
-- [WAVE](https://wave.webaim.org/extension/)
-- [Lighthouse](https://developers.google.com/web/tools/lighthouse)
-- [BrowserStack](https://www.browserstack.com/)
-
-### Testing
-- [Pa11y](https://pa11y.org/)
-- [axe-core](https://github.com/dequelabs/axe-core)
-- [Jest Axe](https://github.com/nickcolley/jest-axe)
-- [Testing Library](https://testing-library.com/)
-
-Remember: Accessibility and browser compatibility are not one-time tasks but ongoing responsibilities that require continuous attention and testing.
+---

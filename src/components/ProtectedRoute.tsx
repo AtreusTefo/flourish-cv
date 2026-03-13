@@ -13,8 +13,10 @@ const ProtectedRoute = ({ children, redirectTo = "/auth" }: ProtectedRouteProps)
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center" role="status" aria-label="Loading, please wait">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" aria-busy="true">
+          <span className="sr-only">Loading...</span>
+        </div>
       </div>
     );
   }

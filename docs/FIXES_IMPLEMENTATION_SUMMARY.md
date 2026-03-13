@@ -294,3 +294,10 @@ The Flourish CV application is now fully functional both locally and in producti
 *Initial implementation completed on: Original date*
 *Production deployment fixes completed on: March 8, 2026*
 *All fixes validated and application ready for use*
+
+---
+
+## 2026 Update: Public-Only Mode
+
+- All fixes now apply to all users (no login required).
+- Remove any references to authentication, login, or user-specific features from fix descriptions.

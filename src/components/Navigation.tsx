@@ -1,22 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, User, Menu, X } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { FileText, Menu, X } from "lucide-react";
 
 interface NavigationProps {
-  showAuthButtons?: boolean;
   showDashboardLink?: boolean;
   variant?: "default" | "minimal";
 }
 
 const Navigation = ({ 
-  showAuthButtons = true, 
   showDashboardLink = true,
   variant = "default" 
 }: NavigationProps) => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -25,10 +20,7 @@ const Navigation = ({
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setIsMobileMenuOpen(false);
-  };
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   // Handle keyboard navigation for mobile menu
   useEffect(() => {
@@ -110,29 +102,16 @@ const Navigation = ({
               </>
             )}
             
-            {user && showDashboardLink ? (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  asChild
-                >
-                  <Link to="/dashboard">
-                    <User className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Link>
+            <div className="flex items-center gap-2">
+              {showDashboardLink && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/dashboard">Dashboard</Link>
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  asChild
-                >
-                  <Link to="/profile">
-                    Profile
-                  </Link>
-                </Button>
-              </div>
-            ) : null}
+              )}
+              <Button size="sm" className="bg-gradient-primary hover:opacity-90" asChild>
+                <Link to="/builder">Build Resume</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -175,7 +154,7 @@ const Navigation = ({
                       e.preventDefault();
                       const element = document.getElementById('features');
                       element?.scrollIntoView({ behavior: 'smooth' });
-                      setIsMobileMenuOpen(false);
+                      closeMobileMenu();
                     }}
                   >
                     Features
@@ -183,14 +162,14 @@ const Navigation = ({
                   <Link
                     to="/templates"
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                   >
                     Templates
                   </Link>
                   <Link
                     to="/blog"
                     className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 text-left"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                   >
                     Blog
                   </Link>
@@ -201,39 +180,22 @@ const Navigation = ({
                       e.preventDefault();
                       const element = document.getElementById('how-it-works');
                       element?.scrollIntoView({ behavior: 'smooth' });
-                      setIsMobileMenuOpen(false);
+                      closeMobileMenu();
                     }}
                   >
                     How It Works
                   </a>
                 </>
               )}
-              
-              {user && showDashboardLink ? (
-                <>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="justify-start"
-                    asChild
-                  >
-                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                      <User className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </Link>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="justify-start"
-                    asChild
-                  >
-                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      Profile
-                    </Link>
-                  </Button>
-                </>
-              ) : null}
+
+              {showDashboardLink && (
+                <Button variant="outline" size="sm" className="justify-start" asChild>
+                  <Link to="/dashboard" onClick={closeMobileMenu}>Dashboard</Link>
+                </Button>
+              )}
+              <Button size="sm" className="bg-gradient-primary hover:opacity-90 justify-start" asChild>
+                <Link to="/builder" onClick={closeMobileMenu}>Build Resume</Link>
+              </Button>
             </div>
           </div>
         )}

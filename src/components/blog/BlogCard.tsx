@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User } from "lucide-react";
+import { logger } from "@/utils/logger";
 
 interface BlogPost {
   id: number;
@@ -23,7 +24,7 @@ const BlogCard = ({ post }: BlogCardProps) => {
       const date = new Date(dateString);
       // Check if the date is valid
       if (isNaN(date.getTime())) {
-        console.warn(`Invalid date string provided: ${dateString}`);
+        logger.warn(`Invalid date string provided: ${dateString}`, { component: 'BlogCard', action: 'formatDate' });
         return 'Invalid Date';
       }
       return date.toLocaleDateString('en-US', { 
@@ -32,7 +33,7 @@ const BlogCard = ({ post }: BlogCardProps) => {
         day: 'numeric' 
       });
     } catch (error) {
-      console.error('Error formatting date:', error);
+      logger.error('Error formatting date', error, { component: 'BlogCard', action: 'formatDate', dateString });
       return 'Invalid Date';
     }
   };

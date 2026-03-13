@@ -93,3 +93,10 @@
 2. **Manual Testing**: Test with actual screen readers
 3. **User Testing**: Include users with visual impairments
 4. **Color Blind Testing**: Use simulators for different types of color blindness
+
+---
+
+## 2026 Update: Public-Only Mode
+
+- All color contrast validation and recommendations now apply to all users (no login required).
+- Remove any references to authentication, login, or user-specific color settings.

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Edit, Trash2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import { toast } from "sonner";
 import { logger } from "@/utils/logger";
@@ -13,17 +12,12 @@ import SEOHead from "@/components/SEOHead";
 import { ResumeCardSkeleton } from "@/components/ui/skeleton-loaders";
 
 const Dashboard = () => {
-  const { user, loading: authLoading } = useAuth();
   const { resumes, loading: resumesLoading, deleteResume, fetchResumes } = useResumes();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    } else if (user) {
-      fetchResumes();
-    }
-  }, [user, authLoading, navigate, fetchResumes]);
+    fetchResumes();
+  }, [fetchResumes]);
 
   const handleDeleteResume = async (id: string) => {
     try {
@@ -53,17 +47,6 @@ const Dashboard = () => {
       return 'Invalid Date';
     }
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,7 +142,7 @@ const Dashboard = () => {
                       </Button>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {new Date(resume.updated_at).toLocaleDateString()}
+                      {formatDate(resume.updated_at)}
                     </div>
                   </div>
                 </CardContent>

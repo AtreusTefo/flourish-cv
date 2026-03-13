@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import CVForm from "@/components/cv/CVForm";
@@ -14,7 +14,6 @@ const Builder = () => {
   
   // Auto-save state management
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
   
   // Get template from URL parameters, default to "modern"
   const templateFromUrl = searchParams.get('template') as "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact" | null;
@@ -34,6 +33,9 @@ const Builder = () => {
     experience: [],
     education: [],
     skills: [],
+    projects: [],
+    languages: [],
+    interests: [],
     template: initialTemplate,
   });
 
@@ -52,35 +54,26 @@ const Builder = () => {
     }
   }, []);
 
-  // Auto-save function with debouncing
-  const autoSave = useCallback(() => {
-    try {
-      const title = generateResumeTitle({
-        personalInfo: cvData.personalInfo,
-        template: cvData.template,
-        experience: cvData.experience,
-      });
-      localStorage.setItem('cv-data', JSON.stringify({ title, cv_data: cvData, template: cvData.template }));
-      setAutoSaveStatus('saved');
-      setTimeout(() => setAutoSaveStatus('idle'), 2000);
-    } catch (error) {
-      logger.error('Error auto-saving to localStorage', error, { component: 'Builder', action: 'autoSave' });
-      setAutoSaveStatus('error');
-      setTimeout(() => setAutoSaveStatus('idle'), 3000);
-    }
-  }, [cvData]);
-
   // Debounced auto-save effect
   useEffect(() => {
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
     const timeout = setTimeout(() => {
-      autoSave();
+      try {
+        const title = generateResumeTitle({
+          personalInfo: cvData.personalInfo,
+          template: cvData.template,
+          experience: cvData.experience,
+        });
+        localStorage.setItem('cv-data', JSON.stringify({ title, cv_data: cvData, template: cvData.template }));
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      } catch (error) {
+        logger.error('Error auto-saving to localStorage', error, { component: 'Builder', action: 'autoSave' });
+        setAutoSaveStatus('error');
+        setTimeout(() => setAutoSaveStatus('idle'), 3000);
+      }
     }, 2000);
-    setAutoSaveTimeout(timeout);
     return () => { clearTimeout(timeout); };
-  }, [cvData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [cvData]);
 
   const handleSaveResume = () => {
     try {

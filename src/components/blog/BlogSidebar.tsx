@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Twitter, Linkedin, Github, Facebook } from "lucide-react";
+import { logger } from "@/utils/logger";
 
 interface BlogPost {
   id: number;
@@ -119,7 +120,7 @@ const BlogSidebar = ({
                         const date = new Date(post.date);
                         // Check if the date is valid
                         if (isNaN(date.getTime())) {
-                          console.warn(`Invalid date string provided: ${post.date}`);
+                          logger.warn(`Invalid date string provided: ${post.date}`, { component: 'BlogSidebar', action: 'formatDate' });
                           return 'Invalid Date';
                         }
                         return date.toLocaleDateString('en-US', {
@@ -128,7 +129,7 @@ const BlogSidebar = ({
                           day: 'numeric',
                         });
                       } catch (error) {
-                        console.error('Error formatting date:', error);
+                        logger.error('Error formatting date', error, { component: 'BlogSidebar', action: 'formatDate', dateString: post.date });
                         return 'Invalid Date';
                       }
                     })()}

@@ -83,9 +83,10 @@ const Index = () => {
                 Download your resume as a polished PDF ready to send to employers.
               </p>
             </Card>
-            <Card className="p-6 bg-white border-none shadow-md hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
-                <Lock className="h-6 w-6 text-white" />
+            <Card className="p-6 bg-white border-none shadow-md hover:shadow-lg transition-shadow relative opacity-75">
+              <span className="absolute top-3 right-3 text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Coming Soon</span>
+              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
+                <Lock className="h-6 w-6 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Save & Manage</h3>
               <p className="text-muted-foreground">

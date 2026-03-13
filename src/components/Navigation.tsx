@@ -132,16 +132,6 @@ const Navigation = ({
                   </Link>
                 </Button>
               </div>
-            ) : showAuthButtons ? (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                asChild
-              >
-                <Link to="/auth">
-                  Sign In
-                </Link>
-              </Button>
             ) : null}
           </div>
 
@@ -243,17 +233,6 @@ const Navigation = ({
                     </Link>
                   </Button>
                 </>
-              ) : showAuthButtons ? (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="justify-start"
-                  asChild
-                >
-                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                    Sign In
-                  </Link>
-                </Button>
               ) : null}
             </div>
           </div>

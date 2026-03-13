@@ -197,10 +197,3 @@ The fixes are production-ready and follow web performance best practices.
 **Solution:** Removed overly granular chunk splitting. Only self-contained packages (`react`, `jspdf`, `@radix-ui`) are manually chunked. All other packages use Vite's default chunking which correctly handles shared dependencies.
 
 See `FIXES_IMPLEMENTATION_SUMMARY.md` sections 9 and 10 for full technical details.
-
----
-
-## 2026 Update: Public-Only Mode
-
-- All browser fixes and compatibility improvements now apply to all users (no login required).
-- Remove any references to authentication, login, or user-specific browser issues.

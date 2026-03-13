@@ -260,14 +260,3 @@ Accessibility is an ongoing process. We regularly:
 - Monitor accessibility metrics
 
 Your feedback helps us improve accessibility for everyone!
-
----
-
-## 2026 Update: Public-Only Mode
-
-- Authentication, login, and profile/account creation have been removed.
-- All accessibility features are available to all users, no login required.
-- Navigation and dashboard are always accessible.
-- Remove any references to user accounts or protected features from accessibility testing and documentation.
-
----

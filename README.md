@@ -12,7 +12,6 @@ A modern, accessible, and user-friendly CV/Resume builder application built with
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Color Contrast Validation**: Built-in color accessibility checker
 - **Auto-save**: Never lose your work with automatic saving
-- **User Authentication**: Secure login and profile management
 
 ## ♿ Accessibility Features
 
@@ -111,3 +110,14 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+---
+
+## 2026 Update: Public-Only Mode
+
+- Authentication, login, and profile/account creation have been removed.
+- All features are available to all users, no login required.
+- Navigation and dashboard are always accessible.
+- Remove any references to user accounts or protected features from documentation.
+
+---

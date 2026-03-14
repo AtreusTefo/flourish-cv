@@ -1,0 +1,44 @@
+[build]
+  base = "."
+  publish = "dist"
+  # NPM_CONFIG_PRODUCTION=false ensures devDeps (vite, typescript, tailwind, etc)
+  # are always installed regardless of NODE_ENV=production set by Netlify CI
+  command = "npm install && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # The definitive flag: tells npm to install devDependencies even in production mode
+  NPM_CONFIG_PRODUCTION = "false"
+  # Prevent React/Vite build warnings from being treated as fatal errors by Netlify CI
+
+# Redirect rules for SPA (Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache service worker
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Environment variables (these should be set in Netlify dashboard)
+# VITE_SUPABASE_URL
+# VITE_SUPABASE_ANON_KEY
+# VITE_SUPABASE_SERVICE_ROLE_KEY

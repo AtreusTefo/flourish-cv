@@ -1,52 +1,21 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Edit, Trash2 } from "lucide-react";
-import { useResumes } from "@/hooks/useResumes";
-import { toast } from "sonner";
-import { logger } from "@/utils/logger";
 import Navigation from "@/components/Navigation";
 import SEOHead from "@/components/SEOHead";
 import { ResumeCardSkeleton } from "@/components/ui/skeleton-loaders";
+import { useDashboardController } from "@/hooks/useDashboardController";
 
 const Dashboard = () => {
-  const { resumes, loading: resumesLoading, deleteResume, fetchResumes } = useResumes();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchResumes();
-  }, [fetchResumes]);
-
-  const handleDeleteResume = async (id: string) => {
-    try {
-      await deleteResume(id);
-      toast.success("Resume deleted successfully");
-    } catch (error) {
-      logger.error("Error deleting resume", error, { component: 'Dashboard', action: 'deleteResume', resumeId: id });
-      toast.error("Failed to delete resume");
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        logger.warn(`Invalid date string provided: ${dateString}`, { component: 'Dashboard', action: 'formatDate' });
-        return 'Invalid Date';
-      }
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
-    } catch (error) {
-      logger.error('Error formatting date', error, { component: 'Dashboard', action: 'formatDate', dateString });
-      return 'Invalid Date';
-    }
-  };
+  const {
+    resumes,
+    resumesLoading,
+    handleDeleteResume,
+    handleNavigateToBuilder,
+    handleEditResume,
+    formatDate,
+  } = useDashboardController();
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +42,7 @@ const Dashboard = () => {
 
         {/* Create New Resume Button */}
         <div className="mb-6">
-          <Button onClick={() => navigate("/builder")} className="gap-2">
+          <Button onClick={handleNavigateToBuilder} className="gap-2">
             <Plus className="h-4 w-4" />
             Create New Resume
           </Button>
@@ -94,7 +63,7 @@ const Dashboard = () => {
               <p className="text-muted-foreground mb-4">
                 Create your first resume to get started
               </p>
-              <Button onClick={() => navigate("/builder")}>
+              <Button onClick={handleNavigateToBuilder}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Resume
               </Button>
@@ -125,7 +94,7 @@ const Dashboard = () => {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        onClick={() => navigate(`/builder?resume=${resume.id}`)}
+                        onClick={() => handleEditResume(resume.id)}
                         className="gap-1"
                       >
                         <Edit className="h-3 w-3" />

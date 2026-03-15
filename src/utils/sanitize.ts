@@ -1,8 +1,10 @@
 /**
- * Utility functions for input sanitization and validation
+ * Utility functions for input sanitization.
+ * Validation rules are centralised in src/validation/ (Zod schemas).
  */
 
 import { CVData } from '@/types/cv';
+import { cvSchema } from '@/validation/cvSchema';
 
 /**
  * Sanitizes HTML content by removing potentially dangerous elements and attributes
@@ -48,36 +50,6 @@ export const sanitizeText = (input: string): string => {
 };
 
 /**
- * Validates email format
- */
-export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-/**
- * Validates phone number format (basic validation)
- */
-export const validatePhone = (phone: string): boolean => {
-  if (!phone) return true; // Phone is optional
-  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
-  return phoneRegex.test(phone.replace(/[\s\-()]/g, ''));
-};
-
-/**
- * Validates URL format
- */
-export const validateUrl = (url: string): boolean => {
-  if (!url) return true; // URL is optional
-  try {
-    new URL(url.startsWith('http') ? url : `https://${url}`);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-/**
  * Sanitizes and validates CV form data
  */
 export const sanitizeCVData = (data: CVData): CVData => {
@@ -88,8 +60,10 @@ export const sanitizeCVData = (data: CVData): CVData => {
   // Sanitize personal info
   if (sanitized.personalInfo) {
     Object.keys(sanitized.personalInfo).forEach(key => {
-      if (typeof sanitized.personalInfo[key] === 'string') {
-        sanitized.personalInfo[key] = sanitizeText(sanitized.personalInfo[key]);
+      if (typeof sanitized.personalInfo[key as keyof typeof sanitized.personalInfo] === 'string') {
+        (sanitized.personalInfo as Record<string, string>)[key] = sanitizeText(
+          (sanitized.personalInfo as Record<string, string>)[key]
+        );
       }
     });
   }
@@ -129,41 +103,13 @@ export const sanitizeCVData = (data: CVData): CVData => {
 };
 
 /**
- * Validates required fields in CV data
+ * Validates required fields in CV data using the centralised Zod schema.
  */
 export const validateCVData = (data: CVData): { isValid: boolean; errors: string[] } => {
-  const errors: string[] = [];
-  
-  if (!data) {
-    errors.push('CV data is required');
-    return { isValid: false, errors };
+  const result = cvSchema.safeParse(data);
+  if (result.success) {
+    return { isValid: true, errors: [] };
   }
-  
-  // Validate personal info
-  if (!data.personalInfo?.fullName?.trim()) {
-    errors.push('Full name is required');
-  }
-  
-  if (!data.personalInfo?.email?.trim()) {
-    errors.push('Email is required');
-  } else if (!validateEmail(data.personalInfo.email)) {
-    errors.push('Please enter a valid email address');
-  }
-  
-  if (data.personalInfo?.phone && !validatePhone(data.personalInfo.phone)) {
-    errors.push('Please enter a valid phone number');
-  }
-  
-  if (data.personalInfo?.website && !validateUrl(data.personalInfo.website)) {
-    errors.push('Please enter a valid website URL');
-  }
-  
-  if (data.personalInfo?.linkedin && !validateUrl(data.personalInfo.linkedin)) {
-    errors.push('Please enter a valid LinkedIn URL');
-  }
-  
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
+  const errors = result.error.errors.map((e) => e.message);
+  return { isValid: false, errors };
 };

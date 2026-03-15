@@ -1,33 +1,27 @@
 import { useState } from "react";
 import { CVData } from "@/types/cv";
-import { sanitizeHtml, validateEmail, validatePhone, validateUrl } from "@/utils/sanitize";
+import { sanitizeHtml } from "@/utils/sanitize";
+import { personalInfoSchema } from "@/validation/cvSchema";
 
 export const useCVFormHandlers = (cvData: CVData, setCVData: (data: CVData) => void) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const updatePersonalInfo = (field: string, value: string) => {
     const newErrors = { ...errors };
-    switch (field) {
-      case "email":
-        if (value && !validateEmail(value)) newErrors[field] = "Please enter a valid email address";
-        else delete newErrors[field];
-        break;
-      case "phone":
-        if (value && !validatePhone(value)) newErrors[field] = "Please enter a valid phone number";
-        else delete newErrors[field];
-        break;
-      case "website":
-      case "linkedin":
-        if (value && !validateUrl(value)) newErrors[field] = "Please enter a valid URL";
-        else delete newErrors[field];
-        break;
-      case "fullName":
-        if (!value.trim()) newErrors[field] = "Full name is required";
-        else delete newErrors[field];
-        break;
-      default:
+
+    // Validate the individual field using the centralised Zod schema
+    const fieldKey = field as keyof typeof personalInfoSchema.shape;
+    if (fieldKey in personalInfoSchema.shape) {
+      const result = personalInfoSchema.shape[fieldKey].safeParse(value);
+      if (!result.success) {
+        newErrors[field] = result.error.errors[0].message;
+      } else {
         delete newErrors[field];
+      }
+    } else {
+      delete newErrors[field];
     }
+
     setErrors(newErrors);
     setCVData({ ...cvData, personalInfo: { ...cvData.personalInfo, [field]: value } });
   };

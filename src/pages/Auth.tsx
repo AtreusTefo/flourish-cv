@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,120 +10,89 @@ import { FileText, AlertCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { loginSchema, signupSchema, type LoginFormData, type SignupFormData } from "@/validation/authSchema";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
+  const loginForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const signupForm = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { email: "", password: "", fullName: "" },
+  });
+
   useEffect(() => {
-    // Redirect if already logged in
     if (user) {
-      // Get the intended destination from location state, or default to dashboard
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, { replace: true });
     }
   }, [user, navigate, location.state]);
 
-  const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
-    // Email validation
-    if (!email) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-    
-    // Password validation
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
-    }
-    
-    // Full name validation for signup
-    if (!isLogin && !fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+  const handleSubmit = async (data: LoginFormData | SignupFormData) => {
     setLoading(true);
-    setErrors({});
+    setGeneralError(null);
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { email, password } = data as LoginFormData;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          // Handle specific authentication errors
           if (error.message.includes("Invalid login credentials")) {
-            setErrors({ 
-              general: "Invalid email or password. Please check your credentials and try again." 
-            });
+            setGeneralError("Invalid email or password. Please check your credentials and try again.");
           } else if (error.message.includes("Email not confirmed")) {
-            setErrors({ 
-              general: "Please check your email and click the confirmation link before signing in." 
-            });
+            setGeneralError("Please check your email and click the confirmation link before signing in.");
           } else {
-            setErrors({ 
-              general: error.message || "An error occurred during sign in" 
-            });
+            setGeneralError(error.message || "An error occurred during sign in");
           }
           return;
         }
         toast.success("Welcome back!");
       } else {
+        const { email, password, fullName } = data as SignupFormData;
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: {
-              full_name: fullName,
-            },
+            data: { full_name: fullName },
             emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
         if (error) {
           if (error.message.includes("User already registered")) {
-            setErrors({ 
-              general: "An account with this email already exists. Please sign in instead." 
-            });
+            setGeneralError("An account with this email already exists. Please sign in instead.");
           } else {
-            setErrors({ 
-              general: error.message || "An error occurred during sign up" 
-            });
+            setGeneralError(error.message || "An error occurred during sign up");
           }
           return;
         }
         toast.success("Account created! Please check your email to verify your account.");
       }
-    } catch (error: unknown) {
-      setErrors({ 
-        general: "An unexpected error occurred. Please try again." 
-      });
+    } catch {
+      setGeneralError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  const switchMode = () => {
+    setIsLogin((prev) => !prev);
+    setGeneralError(null);
+    loginForm.reset();
+    signupForm.reset();
+  };
+
+  const loginErrors = loginForm.formState.errors;
+  const signupErrors = signupForm.formState.errors;
+  const fieldErrors = isLogin ? loginErrors : signupErrors;
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
@@ -138,14 +109,14 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {errors.general && (
-              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                <AlertCircle className="h-4 w-4" />
-                <span>{errors.general}</span>
+          <form onSubmit={isLogin ? loginForm.handleSubmit(handleSubmit) : signupForm.handleSubmit(handleSubmit)} className="space-y-4">
+            {generalError && (
+              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md" role="alert">
+                <AlertCircle className="h-4 w-4" aria-hidden="true" />
+                <span>{generalError}</span>
               </div>
             )}
-            
+
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
@@ -153,47 +124,46 @@ const Auth = () => {
                   id="fullName"
                   type="text"
                   placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                  className={errors.fullName ? "border-red-500" : ""}
+                  {...signupForm.register("fullName")}
+                  aria-invalid={!!signupErrors.fullName}
+                  className={signupErrors.fullName ? "border-red-500" : ""}
                 />
-                {errors.fullName && (
-                  <p className="text-sm text-red-600">{errors.fullName}</p>
+                {signupErrors.fullName && (
+                  <p className="text-sm text-red-600" role="alert">{signupErrors.fullName.message}</p>
                 )}
               </div>
             )}
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={errors.email ? "border-red-500" : ""}
+                {...(isLogin ? loginForm.register("email") : signupForm.register("email"))}
+                aria-invalid={!!fieldErrors.email}
+                className={fieldErrors.email ? "border-red-500" : ""}
               />
-              {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
+              {fieldErrors.email && (
+                <p className="text-sm text-red-600" role="alert">{fieldErrors.email.message}</p>
               )}
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className={errors.password ? "border-red-500" : ""}
+                {...(isLogin ? loginForm.register("password") : signupForm.register("password"))}
+                aria-invalid={!!fieldErrors.password}
+                className={fieldErrors.password ? "border-red-500" : ""}
               />
-              {errors.password && (
-                <p className="text-sm text-red-600">{errors.password}</p>
+              {fieldErrors.password && (
+                <p className="text-sm text-red-600" role="alert">{fieldErrors.password.message}</p>
               )}
             </div>
+
             <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
               {loading ? (
                 <>
@@ -205,13 +175,11 @@ const Auth = () => {
               )}
             </Button>
           </form>
+
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setErrors({});
-              }}
+              onClick={switchMode}
               className="text-primary hover:underline"
             >
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}

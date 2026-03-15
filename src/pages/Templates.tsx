@@ -3,209 +3,34 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Check, Download, Palette, Loader2, AlertTriangle, CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
 import Navigation from "@/components/Navigation";
 import SEOHead from "@/components/SEOHead";
-import ModernBlueTemplate from "@/components/cv/templates/ModernBlueTemplate";
-import MinimalClassicTemplate from "@/components/cv/templates/MinimalClassicTemplate";
-import CreativeEdgeTemplate from "@/components/cv/templates/CreativeEdgeTemplate";
-import ExecutiveFormalTemplate from "@/components/cv/templates/ExecutiveFormalTemplate";
-import TechDeveloperTemplate from "@/components/cv/templates/TechDeveloperTemplate";
-import SimpleElegantTemplate from "@/components/cv/templates/SimpleElegantTemplate";
-import AcademicTemplate from "@/components/cv/templates/AcademicTemplate";
-import BoldModernTemplate from "@/components/cv/templates/BoldModernTemplate";
-import CompactProTemplate from "@/components/cv/templates/CompactProTemplate";
 import { sampleCVData } from "@/data/sampleCV";
-import { validateCVColors } from "@/utils/colorContrast";
-import { toast } from "sonner";
-import { logger } from "@/utils/logger";
+import { useTemplatesController } from "@/hooks/useTemplatesController";
 
 const Templates = () => {
-  const navigate = useNavigate();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("modern");
-  const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#3B82F6");
-  const [secondaryColor, setSecondaryColor] = useState("#1E40AF");
-  const [primaryColorError, setPrimaryColorError] = useState(false);
-  const [secondaryColorError, setSecondaryColorError] = useState(false);
-  const [showExportSuccess, setShowExportSuccess] = useState(false);
-
-  const HEX_RE = /^#[0-9a-fA-F]{6}$/
-
-  // Color contrast validation
-  const colorValidation = useMemo(() => {
-    return validateCVColors(primaryColor, secondaryColor);
-  }, [primaryColor, secondaryColor]);
-
-
-  const templates = [
-    {
-      id: "modern",
-      name: "Modern Blue",
-      description: "Two-column layout with blue accents and clean lines. Perfect for tech and creative roles.",
-      badge: "Most Popular",
-      features: ["Two-column layout", "Blue color accents", "Modern typography", "ATS-friendly"],
-      component: ModernBlueTemplate,
-    },
-    {
-      id: "classic",
-      name: "Minimal Classic",
-      description: "One-column layout with black and gray theme. Ideal for corporate and professional positions.",
-      badge: "Traditional",
-      features: ["Single column", "Formal styling", "Clear sections", "Timeless design"],
-      component: MinimalClassicTemplate,
-    },
-    {
-      id: "creative",
-      name: "Creative Edge",
-      description: "Two-column layout with colored sidebar. Stylish yet professional for creative industries.",
-      badge: "Trendy",
-      features: ["Colored sidebar", "Modern design", "Unique layout", "Eye-catching"],
-      component: CreativeEdgeTemplate,
-    },
-    {
-      id: "executive",
-      name: "Executive Formal",
-      description: "Premium corporate design with dark header. Perfect for senior leadership and executive positions.",
-      badge: "Premium",
-      features: ["Dark header design", "Two-column layout", "Professional styling", "Executive feel"],
-      component: ExecutiveFormalTemplate,
-    },
-    {
-      id: "tech",
-      name: "Tech Developer",
-      description: "Modern tech-focused design with gradient header and card layout. Ideal for developers and IT professionals.",
-      badge: "Developer",
-      features: ["Gradient header", "Card-based layout", "Tech aesthetic", "Project showcase"],
-      component: TechDeveloperTemplate,
-    },
-    {
-      id: "elegant",
-      name: "Simple Elegant",
-      description: "Ultra-clean minimalist design with maximum readability. Perfect for any professional role.",
-      badge: "Minimalist",
-      features: ["Maximum simplicity", "Excellent readability", "Timeless design", "Versatile"],
-      component: SimpleElegantTemplate,
-    },
-    {
-      id: "academic",
-      name: "Academic Research",
-      description: "Scholarly design with emphasis on education and publications. Ideal for researchers and academics.",
-      badge: "Academic",
-      features: ["Publication-focused", "Education-first", "Classic typography", "Research-oriented"],
-      component: AcademicTemplate,
-    },
-    {
-      id: "bold",
-      name: "Bold Modern",
-      description: "Eye-catching design with vibrant colors and bold typography. Perfect for creative professionals.",
-      badge: "Bold",
-      features: ["Vibrant gradient", "Bold typography", "Card-based layout", "Stand out"],
-      component: BoldModernTemplate,
-    },
-    {
-      id: "compact",
-      name: "Compact Pro",
-      description: "Space-efficient design with accent bar and compact sections. Maximum info in minimal space.",
-      badge: "Efficient",
-      features: ["Compact layout", "Space-efficient", "Accent sidebar", "Dense information"],
-      component: CompactProTemplate,
-    },
-  ];
-
-  const [isExporting, setIsExporting] = useState(false);
-
-  const handleExportPDF = async () => {
-    logger.debug('Templates: Export PDF button clicked', { component: 'Templates', action: 'exportPDF' });
-    logger.debug('Current previewTemplate', { component: 'Templates', previewTemplate });
-    logger.debug('Available templates', { component: 'Templates', availableTemplates: templates.map(t => t.id).join(', ') });
-    
-    if (!previewTemplate) {
-      toast.error("Please preview a template first before downloading PDF.");
-      return;
-    }
-
-    try {
-      setIsExporting(true);
-      
-      const elementId = `cv-template-${previewTemplate}`;
-      
-      // Content validation before export
-      const element = document.getElementById(elementId);
-      if (!element) {
-        toast.error("Template content not found. Please refresh and try again.");
-        return;
-      }
-      
-      // Check if element has meaningful content
-      const textContent = element.textContent?.trim();
-      if (!textContent || textContent.length < 50) {
-        toast.error("Template appears to be empty or incomplete. Please ensure the template has loaded properly.");
-        return;
-      }
-      
-      // Use improved PDF export with comprehensive error handling
-      const { ImprovedPDFExporter } = await import('../utils/pdfExportImproved');
-      
-      const result = await ImprovedPDFExporter.exportToPDF(elementId, {
-        fileName: `resume-${previewTemplate}.pdf`,
-        timeout: 30000,
-        scale: 3, // Increased scale for better quality
-        quality: 0.95,
-        maxPages: 10
-      });
-      
-      if (result.success) {
-        // Show success message that TestSprite expects
-        setShowExportSuccess(true);
-        setTimeout(() => setShowExportSuccess(false), 5000);
-        
-        // Success message with page count details
-        const pageInfo = result.pageCount > 1 
-          ? `Multi-page PDF (${result.pageCount} pages) exported successfully`
-          : 'Single-page PDF exported successfully';
-        
-        toast.success(`Your resume has been downloaded as PDF. ${pageInfo}`);
-      } else {
-        throw new Error(result.error || 'PDF export failed');
-      }
-      
-    } catch (error) {
-      // Enhanced error handling with specific error types
-      let errorTitle = "Export Error";
-      let errorDescription = "Failed to export PDF";
-      
-      if (error instanceof Error) {
-        const errorMessage = error.message.toLowerCase();
-        
-        if (errorMessage.includes('timeout')) {
-          errorTitle = "Export Timeout";
-          errorDescription = "PDF export took too long. Please try again with a simpler template.";
-        } else if (errorMessage.includes('element not found')) {
-          errorTitle = "Template Not Found";
-          errorDescription = "Could not find the template content. Please refresh and try again.";
-        } else if (errorMessage.includes('no content')) {
-          errorTitle = "Empty Template";
-          errorDescription = "The template appears to be empty. Please add content before exporting.";
-        } else if (errorMessage.includes('dimensions')) {
-          errorTitle = "Invalid Template";
-          errorDescription = "The template has invalid dimensions. Please try a different template.";
-        } else {
-          errorDescription = `${error.message}`;
-        }
-      }
-      
-      toast.error(errorDescription);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleUseTemplate = () => {
-    // Pass the selected template to the builder via URL parameters
-    navigate(`/builder?template=${selectedTemplate}`);
-  };
+  const {
+    templates,
+    selectedTemplate,
+    previewTemplate,
+    primaryColor,
+    secondaryColor,
+    primaryColorError,
+    secondaryColorError,
+    colorValidation,
+    isExporting,
+    showExportSuccess,
+    HEX_RE,
+    handleSelectTemplate,
+    handlePreviewTemplate,
+    handleClosePreview,
+    handleUseTemplate,
+    handleNavigateToBuilder,
+    handleExportPDF,
+    updatePrimaryColor,
+    updateSecondaryColor,
+    applyColorPreset,
+  } = useTemplatesController();
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,7 +61,7 @@ const Templates = () => {
         <section className="py-6 sm:py-12 md:py-16">
           <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
             <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <Button variant="outline" onClick={() => setPreviewTemplate(null)} size="sm">
+              <Button variant="outline" onClick={handleClosePreview} size="sm">
                 ← Back to Templates
               </Button>
               <Button onClick={handleExportPDF} className="gap-2" size="sm" disabled={isExporting} data-testid="download-pdf-button" id="download-pdf-button">
@@ -291,7 +116,7 @@ const Templates = () => {
                           id="primary-color"
                           type="color"
                           value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
+                          onChange={(e) => updatePrimaryColor(e.target.value)}
                           className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
                           aria-label="Primary color picker"
                         />
@@ -299,10 +124,7 @@ const Templates = () => {
                           <input
                             type="text"
                             value={primaryColor}
-                            onChange={(e) => {
-                              setPrimaryColor(e.target.value);
-                              setPrimaryColorError(!HEX_RE.test(e.target.value));
-                            }}
+                            onChange={(e) => updatePrimaryColor(e.target.value)}
                             className={`w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm ${primaryColorError ? "border-red-500 focus:ring-red-500" : ""}`}
                             placeholder="#3B82F6"
                             aria-label="Primary color hex value"
@@ -323,7 +145,7 @@ const Templates = () => {
                           id="secondary-color"
                           type="color"
                           value={secondaryColor}
-                          onChange={(e) => setSecondaryColor(e.target.value)}
+                          onChange={(e) => updateSecondaryColor(e.target.value)}
                           className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg cursor-pointer border-2 border-border"
                           aria-label="Secondary color picker"
                         />
@@ -331,10 +153,7 @@ const Templates = () => {
                           <input
                             type="text"
                             value={secondaryColor}
-                            onChange={(e) => {
-                              setSecondaryColor(e.target.value);
-                              setSecondaryColorError(!HEX_RE.test(e.target.value));
-                            }}
+                            onChange={(e) => updateSecondaryColor(e.target.value)}
                             className={`w-full px-2 sm:px-3 py-2 border rounded-md font-mono text-xs sm:text-sm ${secondaryColorError ? "border-red-500 focus:ring-red-500" : ""}`}
                             placeholder="#1E40AF"
                             aria-label="Secondary color hex value"
@@ -371,96 +190,56 @@ const Templates = () => {
                       <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">Quick Presets:</p>
                       <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#3B82F6");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#1E40AF");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#3B82F6", "#1E40AF")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #3B82F6 50%, #1E40AF 50%)" }}
                           title="Blue"
                           aria-label="Set Blue color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#10B981");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#059669");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#10B981", "#059669")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #10B981 50%, #059669 50%)" }}
                           title="Green"
                           aria-label="Set Green color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#8B5CF6");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#6D28D9");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#8B5CF6", "#6D28D9")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #8B5CF6 50%, #6D28D9 50%)" }}
                           title="Purple"
                           aria-label="Set Purple color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#EF4444");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#DC2626");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#EF4444", "#DC2626")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #EF4444 50%, #DC2626 50%)" }}
                           title="Red"
                           aria-label="Set Red color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#F59E0B");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#D97706");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#F59E0B", "#D97706")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #F59E0B 50%, #D97706 50%)" }}
                           title="Orange"
                           aria-label="Set Orange color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#06B6D4");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#0891B2");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#06B6D4", "#0891B2")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #06B6D4 50%, #0891B2 50%)" }}
                           title="Cyan"
                           aria-label="Set Cyan color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#EC4899");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#DB2777");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#EC4899", "#DB2777")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #EC4899 50%, #DB2777 50%)" }}
                           title="Pink"
                           aria-label="Set Pink color preset"
                         />
                         <button
-                          onClick={() => {
-                            setPrimaryColor("#1F2937");
-                            setPrimaryColorError(false);
-                            setSecondaryColor("#111827");
-                            setSecondaryColorError(false);
-                          }}
+                          onClick={() => applyColorPreset("#1F2937", "#111827")}
                           className="w-full aspect-square rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ background: "linear-gradient(135deg, #1F2937 50%, #111827 50%)" }}
                           title="Dark"
@@ -486,7 +265,7 @@ const Templates = () => {
                     className={`overflow-hidden hover:shadow-xl transition-all cursor-pointer ${
                       selectedTemplate === template.id ? "ring-2 ring-primary shadow-lg" : ""
                     }`}
-                    onClick={() => setSelectedTemplate(template.id)}
+                    onClick={() => handleSelectTemplate(template.id)}
                     role="button"
                     tabIndex={0}
                     aria-label={`Select ${template.name} template`}
@@ -494,7 +273,7 @@ const Templates = () => {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        setSelectedTemplate(template.id);
+                        handleSelectTemplate(template.id);
                       }
                     }}
                   >
@@ -531,8 +310,7 @@ const Templates = () => {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedTemplate(template.id);
-                            setPreviewTemplate(template.id);
+                            handlePreviewTemplate(template.id);
                           }}
                         >
                           Preview
@@ -546,7 +324,7 @@ const Templates = () => {
                           data-testid={`use-template-${template.id}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/builder?template=${template.id}`);
+                            handleUseTemplate(template.id);
                           }}
                         >
                           <span className="hidden sm:inline">{selectedTemplate === template.id ? "Use Template" : "Select"}</span>
@@ -572,7 +350,7 @@ const Templates = () => {
           <Button
             size="lg"
             className="bg-gradient-primary shadow-lg"
-            onClick={() => navigate(`/builder?template=${previewTemplate ?? selectedTemplate}`)}
+            onClick={handleNavigateToBuilder}
           >
             Start Building with {templates.find((t) => t.id === (previewTemplate ?? selectedTemplate))?.name}
           </Button>

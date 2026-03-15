@@ -1,94 +1,11 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
 import CVForm from "@/components/cv/CVForm";
 import CVPreview from "@/components/cv/CVPreview";
 import BuilderNavigation from "@/components/BuilderNavigation";
 import SEOHead from "@/components/SEOHead";
-import { logger } from "@/utils/logger";
-import { generateResumeTitle } from "@/utils/resumeTitleGenerator";
-import { CVData } from "@/types/cv";
+import { useBuilderController } from "@/hooks/useBuilderController";
 
 const Builder = () => {
-  const [searchParams] = useSearchParams();
-  
-  // Auto-save state management
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  
-  // Get template from URL parameters, default to "modern"
-  const templateFromUrl = searchParams.get('template') as "modern" | "classic" | "creative" | "executive" | "tech" | "elegant" | "academic" | "bold" | "compact" | null;
-  const initialTemplate = templateFromUrl || "modern";
-  
-  const [cvData, setCVData] = useState<CVData>({
-    personalInfo: {
-      fullName: "",
-      jobTitle: "",
-      email: "",
-      phone: "",
-      address: "",
-      linkedin: "",
-      website: "",
-    },
-    summary: "",
-    experience: [],
-    education: [],
-    skills: [],
-    projects: [],
-    languages: [],
-    interests: [],
-    template: initialTemplate,
-  });
-
-  // Load existing resume data on component mount
-  useEffect(() => {
-    try {
-      const savedData = localStorage.getItem('cv-data');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        if (parsedData.cv_data) {
-          setCVData(parsedData.cv_data as CVData);
-        }
-      }
-    } catch (error) {
-      logger.error('Error parsing saved CV data', error, { component: 'Builder', action: 'loadResumeData' });
-    }
-  }, []);
-
-  // Debounced auto-save effect
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      try {
-        const title = generateResumeTitle({
-          personalInfo: cvData.personalInfo,
-          template: cvData.template,
-          experience: cvData.experience,
-        });
-        localStorage.setItem('cv-data', JSON.stringify({ title, cv_data: cvData, template: cvData.template }));
-        setAutoSaveStatus('saved');
-        setTimeout(() => setAutoSaveStatus('idle'), 2000);
-      } catch (error) {
-        logger.error('Error auto-saving to localStorage', error, { component: 'Builder', action: 'autoSave' });
-        setAutoSaveStatus('error');
-        setTimeout(() => setAutoSaveStatus('idle'), 3000);
-      }
-    }, 2000);
-    return () => { clearTimeout(timeout); };
-  }, [cvData]);
-
-  const handleSaveResume = () => {
-    try {
-      const title = generateResumeTitle({
-        personalInfo: cvData.personalInfo,
-        template: cvData.template,
-        experience: cvData.experience,
-      });
-      localStorage.setItem('cv-data', JSON.stringify({ title, cv_data: cvData, template: cvData.template }));
-      toast.success("Resume saved!");
-    } catch (error) {
-      logger.error('Error saving resume', error, { component: 'Builder', action: 'handleSaveResume' });
-      toast.error("Failed to save resume");
-    }
-  };
+  const { cvData, setCVData, autoSaveStatus, handleSaveResume } = useBuilderController();
 
   return (
     <div className="min-h-screen bg-background">

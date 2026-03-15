@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,17 +12,22 @@ import { logger } from "@/utils/logger";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { ProfileFormSkeleton } from "@/components/ui/skeleton-loaders";
+import { profileSchema, type ProfileFormData } from "@/validation/profileSchema";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { profile, loading, updateProfile, createProfile } = useProfile();
-  
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { full_name: "", email: "" },
   });
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -29,49 +36,31 @@ const Profile = () => {
     }
 
     if (profile) {
-      setFormData({
+      reset({
         full_name: profile.full_name || "",
         email: profile.email || "",
       });
     } else if (user) {
-      setFormData({
+      reset({
         full_name: user.user_metadata?.full_name || "",
         email: user.email || "",
       });
     }
-  }, [isAuthenticated, profile, user, navigate]);
+  }, [isAuthenticated, profile, user, navigate, reset]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-
+  const onSubmit = async (data: ProfileFormData) => {
     try {
       if (profile) {
-        await updateProfile({
-          full_name: formData.full_name,
-          email: formData.email,
-        });
+        await updateProfile(data);
         toast.success("Profile updated successfully!");
       } else {
-        await createProfile({
-          full_name: formData.full_name,
-          email: formData.email,
-        });
+        await createProfile(data);
         toast.success("Profile created successfully!");
       }
     } catch (error) {
-      logger.error("Error saving profile", error, { component: 'Profile', action: 'handleSave', userId: user?.id });
+      logger.error("Error saving profile", error, { component: "Profile", action: "handleSave", userId: user?.id });
       toast.error("Failed to save profile");
-    } finally {
-      setSaving(false);
     }
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
   };
 
   if (loading) {
@@ -125,17 +114,20 @@ const Profile = () => {
                 <ProfileFormSkeleton />
               ) : (
                 <>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="space-y-2">
                       <Label htmlFor="full_name">Full Name</Label>
                       <Input
                         id="full_name"
                         type="text"
                         placeholder="Enter your full name"
-                        value={formData.full_name}
-                        onChange={(e) => handleInputChange("full_name", e.target.value)}
-                        required
+                        {...register("full_name")}
+                        aria-invalid={!!errors.full_name}
+                        className={errors.full_name ? "border-red-500" : ""}
                       />
+                      {errors.full_name && (
+                        <p className="text-sm text-red-600" role="alert">{errors.full_name.message}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -144,22 +136,25 @@ const Profile = () => {
                         id="email"
                         type="email"
                         placeholder="Enter your email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        required
+                        {...register("email")}
+                        aria-invalid={!!errors.email}
+                        className={errors.email ? "border-red-500" : ""}
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-600" role="alert">{errors.email.message}</p>
+                      )}
                       <p className="text-sm text-muted-foreground">
                         This email is used for account notifications and login.
                       </p>
                     </div>
 
                     <div className="flex gap-3 pt-4">
-                      <Button 
-                        type="submit" 
-                        className="flex-1 bg-gradient-primary" 
-                        disabled={saving}
+                      <Button
+                        type="submit"
+                        className="flex-1 bg-gradient-primary"
+                        disabled={isSubmitting}
                       >
-                        {saving ? (
+                        {isSubmitting ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                             Saving...
@@ -171,12 +166,12 @@ const Profile = () => {
                           </>
                         )}
                       </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         onClick={() => navigate("/builder")}
                         className="flex-1"
-                        disabled={saving}
+                        disabled={isSubmitting}
                       >
                         Cancel
                       </Button>

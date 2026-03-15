@@ -58,18 +58,18 @@ The app follows a **Multi-layered Architecture with MVC on the presentation laye
 
 ```
 src/
-├── validation/        # Validation layer — Zod schemas (cvSchema, authSchema, profileSchema)
+├── validation/        # Validation layer — Zod schemas (cvSchema only; auth/profile removed)
 ├── integrations/      # Data access layer — Supabase client + generated types
 ├── services/          # Service layer — resumeService.ts (DB operations)
-├── hooks/             # Controller layer — useBuilderController, useDashboardController, useTemplatesController
-├── pages/             # View layer — pure JSX, zero business logic
+├── hooks/             # Controller layer — useBuilderController, useTemplatesController
+├── pages/             # View layer — pages with inline logic where complexity is low
 ├── components/        # Reusable UI components + CV templates
 ├── data/              # Model data — templatesList.ts, sampleCV.ts, blogPosts.ts
 └── types/             # Shared TypeScript types
 ```
 
-- **Views** (`src/pages/`) only render — no `useState`, no data fetching
-- **Controllers** (`src/hooks/use*Controller.ts`) own all state and side-effects per page
+- **Controllers** (`src/hooks/use*Controller.ts`) are only extracted when a page has complex state, side-effects, or async chains — not applied uniformly to every page
+- **Simple pages** (Dashboard, Blog, Index) keep their logic inline — no unnecessary abstraction layer
 - **Validation** (`src/validation/`) is centralized and shared across forms and sanitization utilities
 
 ## Pages & Routes
@@ -79,9 +79,11 @@ src/
 | `/` | Index | Landing page |
 | `/builder` | Builder | CV editor with real-time preview and auto-save |
 | `/templates` | Templates | Browse, preview, and customize all 9 templates |
-| `/dashboard` | Dashboard | Manage saved resumes |
+| `/dashboard` | Dashboard | Manage saved resumes (no login required) |
 | `/blog` | Blog | Career advice articles |
 | `/blog/:id` | BlogPost | Individual blog article |
+
+> All routes are public. Authentication and user accounts were removed in the 2026 update.
 
 ## Getting Started
 

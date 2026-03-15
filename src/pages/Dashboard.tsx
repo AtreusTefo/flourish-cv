@@ -2,20 +2,40 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import SEOHead from "@/components/SEOHead";
 import { ResumeCardSkeleton } from "@/components/ui/skeleton-loaders";
-import { useDashboardController } from "@/hooks/useDashboardController";
+import { useResumes } from "@/hooks/useResumes";
+import { logger } from "@/utils/logger";
 
 const Dashboard = () => {
-  const {
-    resumes,
-    resumesLoading,
-    handleDeleteResume,
-    handleNavigateToBuilder,
-    handleEditResume,
-    formatDate,
-  } = useDashboardController();
+  const navigate = useNavigate();
+  const { resumes, loading: resumesLoading, deleteResume } = useResumes();
+
+  const handleDeleteResume = async (id: string) => {
+    try {
+      await deleteResume(id);
+      toast.success("Resume deleted successfully");
+    } catch (error) {
+      logger.error("Error deleting resume", error, { component: "Dashboard", action: "handleDeleteResume", resumeId: id });
+      toast.error("Failed to delete resume");
+    }
+  };
+
+  const handleNavigateToBuilder = () => navigate("/builder");
+  const handleEditResume = (id: string) => navigate(`/builder?resume=${id}`);
+
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid Date";
+      return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    } catch {
+      return "Invalid Date";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
